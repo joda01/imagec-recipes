@@ -34,6 +34,11 @@ jobs:
           sudo chmod 777 -R /root
           sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
           sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
+          if [[ -f "/Users/runner/.conan2/profiles/default" ]]; then
+            echo "Loaded from cache"
+          else
+            conan profile detect
+          fi
 
       - name: Apply onnx patche
         run: |
