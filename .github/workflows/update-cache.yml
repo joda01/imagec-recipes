@@ -37,14 +37,14 @@ jobs:
           if [[ -f "/Users/runner/.conan2/profiles/default" ]]; then
             echo "Loaded from cache"
           else
-            conan profile detect
+            sudo conan profile detect
           fi
 
       - name: Apply onnx patche
         run: |
           cd recipes/onnx/all
-          conan create . --version=1.17.0
-          conan upload onnx/1.17.0 -r=imageclibs
+          sudo conan create . --version=1.17.0
+          sudo conan upload onnx/1.17.0 -r=imageclibs
 
 
   build-linux-cache:
