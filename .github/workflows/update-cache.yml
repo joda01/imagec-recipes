@@ -111,3 +111,9 @@ jobs:
           conan install . --profile profiles/profile_win_mingw --output-folder=build --build=missing --format=json > build.json
           conan list --graph=build.json --format=json > pkglist.json
           conan upload --list=pkglist.json -r=imageclibs -c
+
+      - name: Build patches
+        run: |
+          cd recipes/onnx/all
+          conan create . --version=1.17.0
+          conan upload onnx/1.17.0 -r=imageclibs
