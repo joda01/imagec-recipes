@@ -68,7 +68,9 @@ jobs:
           sudo apt-get install -y libva-dev libvdpau-dev xkb-data
           sudo pip install conan
           sudo chmod 777 -R /root
+          sudo conan remote remove conancenter
           sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          sudo conan remote add conancenter https://center.conan.io
           sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
@@ -105,7 +107,9 @@ jobs:
           CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}
         run: |
           pip install conan
+          conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          conan remote add conancenter https://center.conan.io
           conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
@@ -139,7 +143,9 @@ jobs:
           CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}    
         run: |
           pip install conan
+          conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          conan remote add conancenter https://center.conan.io
           conan remote login imageclibs writer -p "$env:CONAN_IMAGEC_ARTIFACTORY_PW"
 
       - name: Build with Conan    
