@@ -12,7 +12,39 @@ on:
       - main
 
 jobs:
+
+  apply-patches:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Conan
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Conan
+        env:
+          CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libva-dev libvdpau-dev xkb-data
+          sudo pip install conan
+          sudo chmod 777 -R /root
+          sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
+
+      - name: Apply onnx patche
+        run: |
+          cd recipes/onnx/all
+          conan create . --version=1.17.0
+          conan upload onnx/1.17.0 -r=imageclibs
+
+
   build-linux-cache:
+      needs:
+      - apply-patches
     runs-on: ubuntu-22.04
 
     steps:
@@ -51,6 +83,8 @@ jobs:
           sudo conan upload --list=pkglist.json -r=imageclibs -c
 
   build-macos-cache:
+    needs:
+      - apply-patches
     runs-on: macos-14
 
     steps:
@@ -80,8 +114,11 @@ jobs:
           conan install . --profile profiles/profile_macos --output-folder=build --build=missing --format=json > build.json
           conan list --graph=build.json --format=json > pkglist.json
           conan upload --list=pkglist.json -r=imageclibs -c
+      
 
   build-windows-cache:
+    needs:
+      - apply-patches
     runs-on: windows-latest
 
     steps:
@@ -111,9 +148,3 @@ jobs:
           conan install . --profile profiles/profile_win_mingw --output-folder=build --build=missing --format=json > build.json
           conan list --graph=build.json --format=json > pkglist.json
           conan upload --list=pkglist.json -r=imageclibs -c
-
-      - name: Build patches
-        run: |
-          cd recipes/onnx/all
-          conan create . --version=1.17.0
-          conan upload onnx/1.17.0 -r=imageclibs
