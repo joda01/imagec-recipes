@@ -43,7 +43,7 @@ jobs:
 
 
   build-linux-cache:
-      needs:
+    needs:
       - apply-patches
     runs-on: ubuntu-22.04
 
