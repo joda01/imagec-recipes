@@ -1,6 +1,15 @@
 name: update-cache
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
+      - init
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build-linux-cache:
@@ -9,29 +18,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check if cache exists
-        run: |
-          exit 0
-          if [[ -d ".github/workflows/cache/conan-cache-${{ runner.os }}-v1" ]]; then
-            echo "Cache exists, skipping"
-            exit 0
-          fi
-
       - name: Set up Conan
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install Conan
+        env:
+          CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}
         run: |
           sudo apt-get update
           sudo apt-get install -y libva-dev libvdpau-dev xkb-data
           sudo pip install conan
           sudo chmod 777 -R /root
-          conan remote add https://imagec.org:4431/artifactory/imageclibs/
-          conan remote login -p
+          sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
-      - name: Build recipies
+      - name: Build with Conan
+        env:
+          CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}
         run: |
           if [[ -f "/root/.conan2/profiles/default" ]]; then
             echo "Loaded from cache"
@@ -39,15 +44,11 @@ jobs:
             sudo conan profile detect
           fi
           sudo cat /root/.conan2/profiles/default
-          sudo conan install . --profile conan/profile_linux --output-folder=build --build=missing
           sudo chmod 777 -R /root/.conan2
 
-      - name: Save Conan Cache
-        uses: actions/cache/save@v4
-        with:
-          path: /root/.conan2
-          key: conan-cache-${{ runner.os }}-v1
-
+          sudo conan install . --profile profiles/profile_linux --output-folder=build --build=missing --format=json > build.json
+          sudo conan list --graph=build.json --format=json > pkglist.json
+          sudo conan upload --list=pkglist.json -r=imageclibs -c
 
   build-macos-cache:
     runs-on: macos-14
@@ -55,22 +56,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check if cache exists
-        run: |
-          exit 0
-          if [[ -d ".github/workflows/cache/conan-cache-${{ runner.os }}-v1" ]]; then
-            echo "Cache exists, skipping"
-            exit 0
-          fi
-      
       - name: Set up Conan
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install Conan
+        env:
+          CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}
         run: |
           pip install conan
+          conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
         run: |
@@ -80,14 +77,9 @@ jobs:
             conan profile detect
           fi
           cat /Users/runner/.conan2/profiles/default
-          conan install . --profile conan/profile_macos --output-folder=build --build=missing
-
-      - name: Save Conan Cache
-        uses: actions/cache/save@v4
-        with:
-          path: /Users/runner/.conan2
-          key: conan-cache-${{ runner.os }}-v1
-
+          conan install . --profile profiles/profile_macos --output-folder=build --build=missing --format=json > build.json
+          conan list --graph=build.json --format=json > pkglist.json
+          conan upload --list=pkglist.json -r=imageclibs -c
 
   build-windows-cache:
     runs-on: windows-latest
@@ -95,23 +87,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check if cache exists
-        run: |
-          if (Test-Path ".github\workflows\cache\conan-cache-Windows-v1") {
-            Write-Host "Cache exists, skipping"
-            exit 0
-          }
-
       - name: Set up Conan
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install Conan
+        env:
+          CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}    
         run: |
           pip install conan
+          conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          conan remote login imageclibs writer -p "$env:CONAN_IMAGEC_ARTIFACTORY_PW"
 
-      - name: Build with Conan
+      - name: Build with Conan    
         run: |
           if (Test-Path "C:\Users\runneradmin\.conan2\profiles\default") {
             Write-Host "Loaded from cache!"
@@ -119,12 +108,6 @@ jobs:
             conan profile detect
           }
           cat C:\Users\runneradmin\.conan2\profiles\default
-          conan install . --profile $env:GITHUB_WORKSPACE\conan\profile_win_mingw --output-folder=build --build=missing
-
-
-
-      - name: Save Conan Cache
-        uses: actions/cache/save@v4
-        with:
-          path: C:/Users/runneradmin/.conan2
-          key: conan-cache-${{ runner.os }}-v1
+          conan install . --profile profiles/profile_win_mingw --output-folder=build --build=missing --format=json > build.json
+          conan list --graph=build.json --format=json > pkglist.json
+          conan upload --list=pkglist.json -r=imageclibs -c
