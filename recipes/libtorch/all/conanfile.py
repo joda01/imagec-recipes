@@ -126,12 +126,10 @@ class LibtorchConan(ConanFile):
         return "build_subfolder"
 
     def export_sources(self):
-        #self.copy("CMakeLists.txt")
         copy(self, "CMakeLists.txt", self.recipe_folder, self.export_sources_folder)
 
         
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
-            #self.copy(patch["patch_file"])
             copy(self, patch["patch_file"], self.recipe_folder, self.export_sources_folder)
 
     def config_options(self):
@@ -188,8 +186,8 @@ class LibtorchConan(ConanFile):
         self.requires("eigen/3.4.0")
         self.requires("fmt/8.0.1")
         self.requires("foxi/cci.20210217")
-        self.requires("onnx/1.8.1")
-        self.requires("protobuf/3.17.1")
+        self.requires("onnx/1.17.0")
+        self.requires("protobuf/3.21.12")
         if self._depends_on_sleef:
             self.requires("sleef/3.5.1")
         if self.options.blas == "openblas":
