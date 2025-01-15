@@ -6,7 +6,8 @@ from conan.errors import ConanInvalidConfiguration
 from conan.errors import ConanException
 from conan.tools.files import copy
 from conan.tools.build import valid_min_cppstd
-
+from conan.tools.layout import basic_layout
+from conan.tools.files import get
 
 import glob
 import os
@@ -182,7 +183,7 @@ class LibtorchConan(ConanFile):
             self.options["libnuma"].shared = True
 
     def requirements(self):
-        self.requires("cpuinfo/cci.20220228")
+        self.requires("cpuinfo/cci.20231129")
         self.requires("eigen/3.4.0")
         self.requires("fmt/8.0.1")
         self.requires("foxi/cci.20210217")
@@ -227,16 +228,16 @@ class LibtorchConan(ConanFile):
             self.requires("fxdiv/cci.20200417")
             self.requires("psimd/cci.20200517")
         if self.options.with_xnnpack:
-            self.requires("xnnpack/cci.20211026")
+            self.requires("xnnpack/cci.20240229")
         if self.options.get_safe("with_nnpack") or self.options.get_safe("with_qnnpack") or self.options.with_xnnpack:
-            self.requires("pthreadpool/cci.20210218")
+            self.requires("pthreadpool/cci.20231129")
         if self.options.get_safe("with_numa"):
             self.requires("libnuma/2.0.14")
         if self.options.with_opencl:
             self.requires("opencl-headers/2020.06.16")
             self.requires("opencl-icd-loader/2020.06.16")
         if self.options.with_opencv:
-            self.requires("opencv/4.5.3")
+            self.requires("opencv/4.10.0")
         if self.options.with_redis:
             self.requires("hiredis/1.0.2")
         if self.options.with_rocksdb:
@@ -293,10 +294,12 @@ class LibtorchConan(ConanFile):
         #  or
         #  - python 3.8+ with pyyaml lib
         # self.build_requires("cpython/3.9.1")
+    def layout(self):
+        basic_layout(self, src_folder="source")
 
     def source(self):
-        tools.get(**self.conan_data["sources"][self.version],
-                  destination=self._source_subfolder, strip_root=True)
+        get(self, **self.conan_data["sources"][self.version], strip_root=True)
+
 
     def _configure_cmake(self):
         if self._cmake:

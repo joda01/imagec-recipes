@@ -49,8 +49,8 @@ jobs:
       - name: Add lib torch
         run: |
           cd recipes/libtorch/all
-          sudo conan create . --version=1.8.1
-          sudo conan upload libtorch/1.8.1 -r=imageclibs
+          sudo conan create . --version=2.5.1 --build=missing
+          sudo conan upload libtorch/2.5.1 -r=imageclibs
 
   build-linux-cache:
     needs:
