@@ -1,5 +1,13 @@
-from conans import ConanFile, CMake, tools
-from conans.errors import ConanInvalidConfiguration
+from conan import ConanFile
+from conan.tools.files import save, load
+from conan.tools.gnu import AutotoolsToolchain, AutotoolsDeps
+from conan.tools.microsoft import unix_path, VCVars, is_msvc
+from conan.errors import ConanInvalidConfiguration
+from conan.errors import ConanException
+from conan.tools.files import copy
+from conan.tools.build import valid_min_cppstd
+
+
 import glob
 import os
 import textwrap
@@ -118,9 +126,13 @@ class LibtorchConan(ConanFile):
         return "build_subfolder"
 
     def export_sources(self):
-        self.copy("CMakeLists.txt")
+        #self.copy("CMakeLists.txt")
+        copy(self, "CMakeLists.txt", self.recipe_folder, self.export_sources_folder)
+
+        
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
-            self.copy(patch["patch_file"])
+            #self.copy(patch["patch_file"])
+            copy(self, patch["patch_file"], self.recipe_folder, self.export_sources_folder)
 
     def config_options(self):
         # Change default options for several OS
@@ -172,7 +184,7 @@ class LibtorchConan(ConanFile):
             self.options["libnuma"].shared = True
 
     def requirements(self):
-        self.requires("cpuinfo/cci.20201217")
+        self.requires("cpuinfo/cci.20220228")
         self.requires("eigen/3.4.0")
         self.requires("fmt/8.0.1")
         self.requires("foxi/cci.20210217")
@@ -213,7 +225,7 @@ class LibtorchConan(ConanFile):
         if self.options.get_safe("with_nnpack"):
             raise ConanInvalidConfiguration("nnpack recipe not yet available in CCI")
         if self.options.get_safe("with_qnnpack"):
-            self.requires("fp16/cci.20200514")
+            self.requires("fp16/cci.20210320")
             self.requires("fxdiv/cci.20200417")
             self.requires("psimd/cci.20200517")
         if self.options.with_xnnpack:
@@ -251,11 +263,12 @@ class LibtorchConan(ConanFile):
 
     @property
     def _depends_on_sleef(self):
-        return self.settings.compiler != "Visual Studio" and self.settings.os not in ["Android", "iOS"]
+        return self.settings.compiler != "msvc" and self.settings.os not in ["Android", "iOS"]
 
     def validate(self):
         if self.settings.compiler.get_safe("cppstd"):
-            tools.check_min_cppstd(self, 14)
+            if not valid_min_cppstd(self, 14):
+                raise ConanInvalidConfiguration("This recipe requires at least C++14.")
         if self.options.with_cuda and self.options.with_rocm:
             raise ConanInvalidConfiguration("libtorch doesn't yet support simultaneously building with CUDA and ROCm")
         if self.options.with_ffmpeg and not self.options.with_opencv:
@@ -266,7 +279,7 @@ class LibtorchConan(ConanFile):
             raise ConanInvalidConfiguration("clang with libc++ can't build libtorch") # TODO: try to fix that
         if self.options.distributed and self.settings.os not in ["Linux", "Windows"]:
             self.output.warn("Distributed libtorch is not tested on {} and likely won't work".format(str(self.settings.os)))
-        if self.options.get_safe("with_numa") and not self.options["libnuma"].shared:
+        if self.options.get_safe("with_numa") and not self.dependencies["libnuma"].options.shared:
             raise ConanInvalidConfiguration("libtorch requires libnuma shared. Set libnuma:shared=True, or disable " \
                                             "numa with libtorch:with_numa=False")
 
@@ -459,7 +472,7 @@ class LibtorchConan(ConanFile):
                 if self.settings.os == "Macos":
                     lib_fullpath = os.path.join(lib_folder, "lib{}.a".format(libname))
                     whole_archive = "-Wl,-force_load,{}".format(lib_fullpath)
-                elif self.settings.compiler == "Visual Studio":
+                elif self.settings.compiler == "msvc":
                     lib_fullpath = os.path.join(lib_folder, "{}".format(libname))
                     whole_archive = "-WHOLEARCHIVE:{}".format(lib_fullpath)
                 else:

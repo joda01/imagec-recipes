@@ -26,7 +26,7 @@ class ImageC(ConanFile):
         self.requires("libtorch/1.8.1")
         self.requires("xkbcommon/1.6.0", override=True)
         self.requires("libpq/15.5", override=True)
-
+        
 
     def layout(self):
         cmake_layout(self)
