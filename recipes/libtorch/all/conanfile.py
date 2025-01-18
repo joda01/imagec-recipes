@@ -8,6 +8,7 @@ from conan.tools.files import copy
 from conan.tools.build import valid_min_cppstd
 from conan.tools.layout import basic_layout
 from conan.tools.files import get
+from conan.tools.cmake import CMake
 
 import glob
 import os
@@ -306,93 +307,174 @@ class LibtorchConan(ConanFile):
         if self._cmake:
             return self._cmake
         self._cmake = CMake(self)
-        self._cmake.definitions["ATEN_NO_TEST"] = True
-        self._cmake.definitions["BUILD_BINARY"] = self.options.utilities
-        self._cmake.definitions["BUILD_DOCS"] = False
-        self._cmake.definitions["BUILD_CUSTOM_PROTOBUF"] = False
-        self._cmake.definitions["BUILD_PYTHON"] = False
-        self._cmake.definitions["BUILD_CAFFE2"] = True
-        self._cmake.definitions["BUILD_CAFFE2_OPS"] = True
-        self._cmake.definitions["BUILD_CAFFE2_MOBILE"] = False
-        self._cmake.definitions["CAFFE2_LINK_LOCAL_PROTOBUF"] = False
-        self._cmake.definitions["CAFFE2_USE_MSVC_STATIC_RUNTIME"] = self.settings.compiler.get_safe("runtime") in ["MT", "MTd", "static"]
-        self._cmake.definitions["BUILD_TEST"] = False
-        self._cmake.definitions["BUILD_STATIC_RUNTIME_BENCHMARK"] = False
-        self._cmake.definitions["BUILD_MOBILE_BENCHMARKS"] = False
-        self._cmake.definitions["BUILD_MOBILE_TEST"] = False
-        self._cmake.definitions["BUILD_JNI"] = False
-        self._cmake.definitions["BUILD_MOBILE_AUTOGRAD"] = False
-        self._cmake.definitions["INSTALL_TEST"] = False
-        self._cmake.definitions["USE_CPP_CODE_COVERAGE"] = False
-        self._cmake.definitions["COLORIZE_OUTPUT"] = True
-        self._cmake.definitions["USE_ASAN"] = False
-        self._cmake.definitions["USE_TSAN"] = False
-        self._cmake.definitions["USE_CUDA"] = self.options.with_cuda
-        self._cmake.definitions["USE_ROCM"] = self.options.with_rocm
-        self._cmake.definitions["CAFFE2_STATIC_LINK_CUDA"] = False
-        self._cmake.definitions["USE_CUDNN"] = self.options.get_safe("with_cudnn", False)
-        self._cmake.definitions["USE_STATIC_CUDNN"] = False
-        self._cmake.definitions["USE_FBGEMM"] = self.options.with_fbgemm
-        self._cmake.definitions["USE_KINETO"] = self.options.get_safe("with_kineto", False)
-        self._cmake.definitions["USE_FAKELOWP"] = self.options.get_safe("fakelowp", False)
-        self._cmake.definitions["USE_FFMPEG"] = self.options.with_ffmpeg
-        self._cmake.definitions["USE_GFLAGS"] = self.options.with_gflags
-        self._cmake.definitions["USE_GLOG"] = self.options.with_glog
-        self._cmake.definitions["USE_LEVELDB"] = self.options.with_leveldb
-        self._cmake.definitions["USE_LITE_PROTO"] = False
-        self._cmake.definitions["USE_LMDB"] = self.options.with_lmdb
-        self._cmake.definitions["USE_METAL"] = self.options.get_safe("with_metal", False)
-        self._cmake.definitions["USE_NATIVE_ARCH"] = False
-        self._cmake.definitions["USE_NCCL"] = self.options.get_safe("with_nccl", False)
-        self._cmake.definitions["USE_STATIC_NCCL"] = False
-        self._cmake.definitions["USE_SYSTEM_NCCL"] = False # technically we could create a recipe for nccl with 0 packages (because it requires CUDA at build time)
-        self._cmake.definitions["USE_NNAPI"] = self.options.get_safe("with_nnapi", False)
-        self._cmake.definitions["USE_NNPACK"] = self.options.get_safe("with_nnpack", False)
-        self._cmake.definitions["USE_NUMA"] = self.options.get_safe("with_numa", False)
-        self._cmake.definitions["USE_NVRTC"] = self.options.get_safe("with_nvrtc", False)
-        self._cmake.definitions["USE_NUMPY"] = False
-        self._cmake.definitions["USE_OBSERVERS"] = self.options.observers
-        self._cmake.definitions["USE_OPENCL"] = self.options.with_opencl
-        self._cmake.definitions["USE_OPENCV"] = self.options.with_opencv
-        self._cmake.definitions["USE_OPENMP"] = self.options.aten_parallel_backend == "openmp"
-        self._cmake.definitions["USE_PROF"] = self.options.profiling
-        self._cmake.definitions["USE_QNNPACK"] = False                                                # QNNPACK is now integrated into libtorch and official repo
-        self._cmake.definitions["USE_PYTORCH_QNNPACK"] = self.options.get_safe("with_qnnpack", False) # is archived, so prefer to use vendored QNNPACK
-        self._cmake.definitions["USE_REDIS"] = self.options.with_redis
-        self._cmake.definitions["USE_ROCKSDB"] = self.options.with_rocksdb
-        self._cmake.definitions["USE_SNPE"] = self.options.get_safe("with_snpe", False)
-        self._cmake.definitions["USE_SYSTEM_EIGEN_INSTALL"] = True
-        self._cmake.definitions["USE_TENSORRT"] = self.options.get_safe("with_tensorrt", False)
-        self._cmake.definitions["USE_VULKAN"] = self.options.with_vulkan
-        self._cmake.definitions["USE_VULKAN_WRAPPER"] = False
-        self._cmake.definitions["USE_VULKAN_SHADERC_RUNTIME"] = self.options.get_safe("vulkan_shaderc_runtime", False)
-        self._cmake.definitions["USE_VULKAN_RELAXED_PRECISION"] = self.options.get_safe("vulkan_relaxed_precision", False)
-        self._cmake.definitions["USE_XNNPACK"] = self.options.with_xnnpack
-        self._cmake.definitions["USE_ZMQ"] = self.options.with_zmq
-        self._cmake.definitions["USE_ZSTD"] = self.options.with_zstd
-        self._cmake.definitions["USE_MKLDNN"] = self.options.with_mkldnn
-        self._cmake.definitions["USE_MKLDNN_CBLAS"] = False # This option has no logic and is useless in libtorch actually
-        self._cmake.definitions["USE_DISTRIBUTED"] = self.options.distributed
-        self._cmake.definitions["USE_MPI"] = self.options.get_safe("with_mpi", False)
-        self._cmake.definitions["USE_GLOO"] = self.options.get_safe("with_gloo", False)
-        self._cmake.definitions["USE_TENSORPIPE"] = self.options.get_safe("with_tensorpipe", False)
-        self._cmake.definitions["USE_TBB"] = self.options.aten_parallel_backend == "tbb"
-        self._cmake.definitions["ONNX_ML"] = True
-        self._cmake.definitions["HAVE_SOVERSION"] = True
-        self._cmake.definitions["USE_SYSTEM_LIBS"] = True
 
-        self._cmake.definitions["USE_LAPACK"] = False # TODO: add an option
 
-        self._cmake.definitions["BUILDING_WITH_TORCH_LIBS"] = True
-        self._cmake.definitions["BLAS"] = self._blas_cmake_option_value
+        #self._cmake.definitions["ATEN_NO_TEST"] = True
+        #self._cmake.definitions["BUILD_BINARY"] = self.options.utilities
+        #self._cmake.definitions["BUILD_DOCS"] = False
+        #self._cmake.definitions["BUILD_CUSTOM_PROTOBUF"] = False
+        #self._cmake.definitions["BUILD_PYTHON"] = False
+        #self._cmake.definitions["BUILD_CAFFE2"] = True
+        #self._cmake.definitions["BUILD_CAFFE2_OPS"] = True
+        #self._cmake.definitions["BUILD_CAFFE2_MOBILE"] = False
 
-        self._cmake.definitions["MSVC_Z7_OVERRIDE"] = False
+        #self._cmake.definitions["CAFFE2_LINK_LOCAL_PROTOBUF"] = False
+        
+        #self._cmake.definitions["CAFFE2_USE_MSVC_STATIC_RUNTIME"] = self.settings.compiler.get_safe("runtime") in ["MT", "MTd", "static"]
+        #self._cmake.definitions["BUILD_TEST"] = False
+        #self._cmake.definitions["BUILD_STATIC_RUNTIME_BENCHMARK"] = False
+        #self._cmake.definitions["BUILD_MOBILE_BENCHMARKS"] = False
+        #self._cmake.definitions["BUILD_MOBILE_TEST"] = False
+        #self._cmake.definitions["BUILD_JNI"] = False
+        #self._cmake.definitions["BUILD_MOBILE_AUTOGRAD"] = False
+        #self._cmake.definitions["INSTALL_TEST"] = False
+        #self._cmake.definitions["USE_CPP_CODE_COVERAGE"] = False
+        #self._cmake.definitions["COLORIZE_OUTPUT"] = True
+        #self._cmake.definitions["USE_ASAN"] = False
+        #self._cmake.definitions["USE_TSAN"] = False
+        #self._cmake.definitions["USE_CUDA"] = self.options.with_cuda
+        #self._cmake.definitions["USE_ROCM"] = self.options.with_rocm
+        #self._cmake.definitions["CAFFE2_STATIC_LINK_CUDA"] = False
+        #self._cmake.definitions["USE_CUDNN"] = self.options.get_safe("with_cudnn", False)
+        #self._cmake.definitions["USE_STATIC_CUDNN"] = False
+        #self._cmake.definitions["USE_FBGEMM"] = self.options.with_fbgemm
+        #self._cmake.definitions["USE_KINETO"] = self.options.get_safe("with_kineto", False)
+        #self._cmake.definitions["USE_FAKELOWP"] = self.options.get_safe("fakelowp", False)
+        #self._cmake.definitions["USE_FFMPEG"] = self.options.with_ffmpeg
+        #self._cmake.definitions["USE_GFLAGS"] = self.options.with_gflags
+        #self._cmake.definitions["USE_GLOG"] = self.options.with_glog
+        #self._cmake.definitions["USE_LEVELDB"] = self.options.with_leveldb
+        #self._cmake.definitions["USE_LITE_PROTO"] = False
+        #self._cmake.definitions["USE_LMDB"] = self.options.with_lmdb
+        #self._cmake.definitions["USE_METAL"] = self.options.get_safe("with_metal", False)
+        #self._cmake.definitions["USE_NATIVE_ARCH"] = False
+        #self._cmake.definitions["USE_NCCL"] = self.options.get_safe("with_nccl", False)
+        #self._cmake.definitions["USE_STATIC_NCCL"] = False
+        #self._cmake.definitions["USE_SYSTEM_NCCL"] = False # technically we could create a recipe for nccl with 0 packages (because it requires CUDA at build time)
+        #self._cmake.definitions["USE_NNAPI"] = self.options.get_safe("with_nnapi", False)
+        #self._cmake.definitions["USE_NNPACK"] = self.options.get_safe("with_nnpack", False)
+        #self._cmake.definitions["USE_NUMA"] = self.options.get_safe("with_numa", False)
+        #self._cmake.definitions["USE_NVRTC"] = self.options.get_safe("with_nvrtc", False)
+        #self._cmake.definitions["USE_NUMPY"] = False
+        #self._cmake.definitions["USE_OBSERVERS"] = self.options.observers
+        #self._cmake.definitions["USE_OPENCL"] = self.options.with_opencl
+        #self._cmake.definitions["USE_OPENCV"] = self.options.with_opencv
+        #self._cmake.definitions["USE_OPENMP"] = self.options.aten_parallel_backend == "openmp"
+        #self._cmake.definitions["USE_PROF"] = self.options.profiling
+        #self._cmake.definitions["USE_QNNPACK"] = False                                                # QNNPACK is now integrated into libtorch and official repo
+        #self._cmake.definitions["USE_PYTORCH_QNNPACK"] = self.options.get_safe("with_qnnpack", False) # is archived, so prefer to use vendored QNNPACK
+        #self._cmake.definitions["USE_REDIS"] = self.options.with_redis
+        #self._cmake.definitions["USE_ROCKSDB"] = self.options.with_rocksdb
+        #self._cmake.definitions["USE_SNPE"] = self.options.get_safe("with_snpe", False)
+        #self._cmake.definitions["USE_SYSTEM_EIGEN_INSTALL"] = True
+        #self._cmake.definitions["USE_TENSORRT"] = self.options.get_safe("with_tensorrt", False)
+        #self._cmake.definitions["USE_VULKAN"] = self.options.with_vulkan
+        #self._cmake.definitions["USE_VULKAN_WRAPPER"] = False
+        #self._cmake.definitions["USE_VULKAN_SHADERC_RUNTIME"] = self.options.get_safe("vulkan_shaderc_runtime", False)
+        #self._cmake.definitions["USE_VULKAN_RELAXED_PRECISION"] = self.options.get_safe("vulkan_relaxed_precision", False)
+        #self._cmake.definitions["USE_XNNPACK"] = self.options.with_xnnpack
+        #self._cmake.definitions["USE_ZMQ"] = self.options.with_zmq
+        #self._cmake.definitions["USE_ZSTD"] = self.options.with_zstd
+        #self._cmake.definitions["USE_MKLDNN"] = self.options.with_mkldnn
+        #self._cmake.definitions["USE_MKLDNN_CBLAS"] = False # This option has no logic and is useless in libtorch actually
+        #self._cmake.definitions["USE_DISTRIBUTED"] = self.options.distributed
+        #self._cmake.definitions["USE_MPI"] = self.options.get_safe("with_mpi", False)
+        #self._cmake.definitions["USE_GLOO"] = self.options.get_safe("with_gloo", False)
+        #self._cmake.definitions["USE_TENSORPIPE"] = self.options.get_safe("with_tensorpipe", False)
+        #self._cmake.definitions["USE_TBB"] = self.options.aten_parallel_backend == "tbb"
+        #self._cmake.definitions["ONNX_ML"] = True
+        #self._cmake.definitions["HAVE_SOVERSION"] = True
+        #self._cmake.definitions["USE_SYSTEM_LIBS"] = True
+        #self._cmake.definitions["USE_LAPACK"] = False # TODO: add an option
+        #self._cmake.definitions["BUILDING_WITH_TORCH_LIBS"] = True
+        #self._cmake.definitions["BLAS"] = self._blas_cmake_option_value
+        #self._cmake.definitions["MSVC_Z7_OVERRIDE"] = False
+        #self._cmake.definitions["CONAN_LIBTORCH_USE_SLEEF"] = self._depends_on_sleef
+        #self._cmake.definitions["CONAN_LIBTORCH_USE_PTHREADPOOL"] = self._use_nnpack_family
 
-        # Custom variables for our CMake wrapper
-        self._cmake.definitions["CONAN_LIBTORCH_USE_SLEEF"] = self._depends_on_sleef
-        self._cmake.definitions["CONAN_LIBTORCH_USE_PTHREADPOOL"] = self._use_nnpack_family
 
-        self._cmake.configure(build_folder=self._build_subfolder)
+
+        self._cmake.configure(variables={"ATEN_NO_TEST": True,
+                                "BUILD_BINARY": self.options.utilities,
+                                "BUILD_DOCS": False,
+                                "BUILD_CUSTOM_PROTOBUF": False,
+                                "BUILD_PYTHON": False,
+                                "BUILD_CAFFE2": True,
+                                "BUILD_CAFFE2_OPS": True,
+                                "BUILD_CAFFE2_MOBILE": False,
+                                "CAFFE2_LINK_LOCAL_PROTOBUF": False,
+                                "CAFFE2_USE_MSVC_STATIC_RUNTIME": self.settings.compiler.get_safe("runtime") in ["MT", "MTd", "static"],
+                                "BUILD_TEST": False,
+                                "BUILD_STATIC_RUNTIME_BENCHMARK": False,
+                                "BUILD_MOBILE_BENCHMARKS": False,
+                                "BUILD_MOBILE_TEST": False,
+                                "BUILD_JNI": False,
+                                "BUILD_MOBILE_AUTOGRAD": False,
+                                "INSTALL_TEST": False,
+                                "USE_CPP_CODE_COVERAGE": False,
+                                "COLORIZE_OUTPUT": True,
+                                "USE_ASAN": False,
+                                "USE_TSAN": False,
+                                "USE_CUDA": self.options.with_cuda,
+                                "USE_ROCM": self.options.with_rocm,
+                                "CAFFE2_STATIC_LINK_CUDA": False,
+                                "USE_CUDNN": self.options.get_safe("with_cudnn", False),
+                                "USE_STATIC_CUDNN": False,
+                                "USE_FBGEMM": self.options.with_fbgemm,
+                                "USE_KINETO": self.options.get_safe("with_kineto", False),
+                                "USE_FAKELOWP": self.options.get_safe("fakelowp", False),
+                                "USE_FFMPEG": self.options.with_ffmpeg,
+                                "USE_GFLAGS": self.options.with_gflags,
+                                "USE_GLOG": self.options.with_glog,
+                                "USE_LEVELDB": self.options.with_leveldb,
+                                "USE_LITE_PROTO": False,
+                                "USE_LMDB": self.options.with_lmdb,
+                                "USE_METAL": self.options.get_safe("with_metal", False),
+                                "USE_NATIVE_ARCH": False,
+                                "USE_NCCL": self.options.get_safe("with_nccl", False),
+                                "USE_STATIC_NCCL": False,
+                                "USE_SYSTEM_NCCL": False ,
+                                "USE_NNAPI": self.options.get_safe("with_nnapi", False),
+                                "USE_NNPACK": self.options.get_safe("with_nnpack", False),
+                                "USE_NUMA": self.options.get_safe("with_numa", False),
+                                "USE_NVRTC": self.options.get_safe("with_nvrtc", False),
+                                "USE_NUMPY": False,
+                                "USE_OBSERVERS": self.options.observers,
+                                "USE_OPENCL": self.options.with_opencl,
+                                "USE_OPENCV": self.options.with_opencv,
+                                "USE_OPENMP": self.options.aten_parallel_backend == "openmp",
+                                "USE_PROF": self.options.profiling,
+                                "USE_QNNPACK": False                                               ,
+                                "USE_PYTORCH_QNNPACK": self.options.get_safe("with_qnnpack", False),
+                                "USE_REDIS": self.options.with_redis,
+                                "USE_ROCKSDB": self.options.with_rocksdb,
+                                "USE_SNPE": self.options.get_safe("with_snpe", False),
+                                "USE_SYSTEM_EIGEN_INSTALL": True,
+                                "USE_TENSORRT": self.options.get_safe("with_tensorrt", False),
+                                "USE_VULKAN": self.options.with_vulkan,
+                                "USE_VULKAN_WRAPPER": False,
+                                "USE_VULKAN_SHADERC_RUNTIME": self.options.get_safe("vulkan_shaderc_runtime", False),
+                                "USE_VULKAN_RELAXED_PRECISION": self.options.get_safe("vulkan_relaxed_precision", False),
+                                "USE_XNNPACK": self.options.with_xnnpack,
+                                "USE_ZMQ": self.options.with_zmq,
+                                "USE_ZSTD": self.options.with_zstd,
+                                "USE_MKLDNN": self.options.with_mkldnn,
+                                "USE_MKLDNN_CBLAS": False ,
+                                "USE_DISTRIBUTED": self.options.distributed,
+                                "USE_MPI": self.options.get_safe("with_mpi", False),
+                                "USE_GLOO": self.options.get_safe("with_gloo", False),
+                                "USE_TENSORPIPE": self.options.get_safe("with_tensorpipe", False),
+                                "USE_TBB": self.options.aten_parallel_backend == "tbb",
+                                "ONNX_ML": True,
+                                "HAVE_SOVERSION": True,
+                                "USE_SYSTEM_LIBS": True,
+                                "USE_LAPACK": False ,
+                                "BUILDING_WITH_TORCH_LIBS": True,
+                                "BLAS": self._blas_cmake_option_value,
+                                "MSVC_Z7_OVERRIDE": False,
+                                "CONAN_LIBTORCH_USE_SLEEF": self._depends_on_sleef,
+                                "CONAN_LIBTORCH_USE_PTHREADPOOL": self._use_nnpack_family,
+                              })
         return self._cmake
 
     @property
@@ -417,7 +499,7 @@ class LibtorchConan(ConanFile):
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
             tools.patch(**patch)
         # conflict with macros.h generated at build time
-        os.remove(os.path.join(self.build_folder, self._source_subfolder, "caffe2", "core", "macros.h"))
+        #os.remove(os.path.join(self.build_folder, self._source_subfolder, "caffe2", "core", "macros.h"))
         cmake = self._configure_cmake()
         cmake.build()
 

@@ -44,3 +44,5 @@ RUN pip install conan --upgrade --break-system-packages
 RUN pip install cyclonedx-conan --break-system-packages
 
 RUN ldconfig
+
+# pip install typing_extensions --break-system-packages
