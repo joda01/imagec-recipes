@@ -115,7 +115,8 @@ class LibtorchConan(ConanFile):
     }
 
     short_paths = True
-    generators = "cmake", "cmake_find_package", "cmake_find_package_multi"
+    #generators = "cmake", "cmake_find_package", "cmake_find_package_multi"
+    generators = "CMakeDeps", "CMakeToolchain"
     _cmake = None
 
     @property
@@ -192,7 +193,7 @@ class LibtorchConan(ConanFile):
         if self._depends_on_sleef:
             self.requires("sleef/3.5.1")
         if self.options.blas == "openblas":
-            self.requires("openblas/0.3.17")
+            self.requires("openblas/0.3.28")
         elif self.options.blas in ["atlas", "mkl", "flame"]:
             raise ConanInvalidConfiguration("{} recipe not yet available in CCI".format(self.options.blas))
         if self.options.aten_parallel_backend == "tbb":

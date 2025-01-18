@@ -46,6 +46,12 @@ jobs:
           sudo conan create . --version=1.17.0
           sudo conan upload onnx/1.17.0 -r=imageclibs
 
+      - name: Add openblas 0.3.28
+        run: |
+          cd recipes/openblas/all
+          sudo conan create . --version=0.3.28 --build=missing
+          sudo conan upload openblas/0.3.28 -r=imageclibs
+
       - name: Add lib torch
         run: |
           cd recipes/libtorch/all
