@@ -46,3 +46,5 @@ RUN pip install cyclonedx-conan --break-system-packages
 RUN ldconfig
 
 # pip install typing_extensions --break-system-packages
+# pip install fmt --break-system-packages
+# pip install tensorpipe --break-system-packages

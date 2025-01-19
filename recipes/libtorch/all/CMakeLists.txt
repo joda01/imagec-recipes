@@ -22,6 +22,7 @@ find_package(Python 3.8.0 REQUIRED)
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
 find_package(Eigen3 REQUIRED)
+find_package(fmt REQUIRED)
 set(EIGEN3_FOUND 1)
 set(EIGEN3_INCLUDE_DIR ${Eigen3_INCLUDE_DIR})
 
@@ -55,5 +56,8 @@ if(CONAN_LIBTORCH_USE_PTHREADPOOL)
     add_library(pthreadpool INTERFACE IMPORTED)
     set_property(TARGET pthreadpool PROPERTY INTERFACE_LINK_LIBRARIES CONAN_PKG::pthreadpool)
 endif()
+
+add_library(fmt INTERFACE IMPORTED)
+
 
 add_subdirectory(source_subfolder)

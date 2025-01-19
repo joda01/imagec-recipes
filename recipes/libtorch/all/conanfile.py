@@ -4,7 +4,7 @@ from conan.tools.gnu import AutotoolsToolchain, AutotoolsDeps
 from conan.tools.microsoft import unix_path, VCVars, is_msvc
 from conan.errors import ConanInvalidConfiguration
 from conan.errors import ConanException
-from conan.tools.files import copy
+from conan.tools.files import copy, apply_conandata_patches, export_conandata_patches
 from conan.tools.build import valid_min_cppstd
 from conan.tools.layout import basic_layout
 from conan.tools.files import get
@@ -111,11 +111,11 @@ class LibtorchConan(ConanFile):
         "distributed": True,
         "with_mpi": True,
         "with_gloo": False, # TODO: should be True
-        "with_tensorpipe": True,
+        "with_tensorpipe": False,
         "utilities": False,
     }
-
     short_paths = True
+    exports_sources = "*.patch"
     #generators = "cmake", "cmake_find_package", "cmake_find_package_multi"
     generators = "CMakeDeps", "CMakeToolchain"
     _cmake = None
@@ -130,6 +130,7 @@ class LibtorchConan(ConanFile):
 
     def export_sources(self):
         copy(self, "CMakeLists.txt", self.recipe_folder, self.export_sources_folder)
+        export_conandata_patches(self)
 
         
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
@@ -187,7 +188,7 @@ class LibtorchConan(ConanFile):
     def requirements(self):
         self.requires("cpuinfo/cci.20231129")
         self.requires("eigen/3.4.0")
-        self.requires("fmt/8.0.1")
+        self.requires("fmt/11.1.1")
         self.requires("foxi/cci.20210217")
         self.requires("onnx/1.17.0")
         self.requires("protobuf/3.21.12")
@@ -300,8 +301,7 @@ class LibtorchConan(ConanFile):
         basic_layout(self, src_folder="source")
 
     def source(self):
-        get(self, **self.conan_data["sources"][self.version], strip_root=True)
-
+        get(self, **self.conan_data["sources"][self.version], strip_root=True, destination=self.source_folder)
 
     def _configure_cmake(self):
         if self._cmake:
@@ -494,10 +494,11 @@ class LibtorchConan(ConanFile):
         return self.options.get_safe("with_nnpack") or self.options.get_safe("with_qnnpack") or self.options.with_xnnpack
 
     def build(self):
+        apply_conandata_patches(self)
         if self.options.get_safe("with_snpe"):
             self.output.warn("with_snpe is enabled. Pay attention that you should have properly set SNPE_LOCATION and SNPE_HEADERS CMake variables")
-        for patch in self.conan_data.get("patches", {}).get(self.version, []):
-            tools.patch(**patch)
+        #for patch in self.conan_data.get("patches", {}).get(self.version, []):
+        #    tools.patch(**patch)
         # conflict with macros.h generated at build time
         #os.remove(os.path.join(self.build_folder, self._source_subfolder, "caffe2", "core", "macros.h"))
         cmake = self._configure_cmake()
