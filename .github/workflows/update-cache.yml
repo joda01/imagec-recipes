@@ -53,11 +53,29 @@ jobs:
           sudo conan create . --version=0.3.28 --build=missing
           sudo conan upload openblas/0.3.28 -r=imageclibs
 
+      - name: Add openmp 0.8.0
+        run: |
+          cd recipes/openmp/all
+          sudo conan create . --version=system --build=missing
+          sudo conan upload openmp/system -r=imageclibs
+
+      - name: Add fbgemm 0.8.0
+        run: |
+          cd recipes/fbgemm/all
+          sudo conan create . --version=0.8.0 --build=missing
+          sudo conan upload fbgemm/0.8.0 -r=imageclibs
+
+      - name: Add sleef 3.6.1
+        run: |
+          cd recipes/sleef/all
+          sudo conan create . --version=3.6.1 --build=missing
+          sudo conan upload sleef/system -r=imageclibs
+
       - name: Add lib torch
         run: |
           cd recipes/libtorch/all
-          sudo conan create . --version=2.5.1 --build=missing
-          sudo conan upload libtorch/2.5.1 -r=imageclibs
+          sudo conan create . --version=2.4.0 --build=missing
+          sudo conan upload libtorch/2.4.0 -r=imageclibs
 
   build-linux-cache:
     needs:
