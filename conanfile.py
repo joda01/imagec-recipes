@@ -15,6 +15,7 @@ class ImageC(ConanFile):
     
 
     def requirements(self):
+        self.requires("eigen/3.4.0")
         self.requires("qt/6.7.1")
         self.requires("opencv/4.10.0")
         self.requires("catch2/3.7.0")
