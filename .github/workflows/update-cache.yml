@@ -53,7 +53,7 @@ jobs:
           sudo conan create . --version=0.3.28 --build=missing
           sudo conan upload openblas/0.3.28 -r=imageclibs
 
-      - name: Add openmp 0.8.0
+      - name: Add openmp system
         run: |
           cd recipes/openmp/all
           sudo conan create . --version=system --build=missing
@@ -69,7 +69,7 @@ jobs:
         run: |
           cd recipes/sleef/all
           sudo conan create . --version=3.6.1 --build=missing
-          sudo conan upload sleef/system -r=imageclibs
+          sudo conan upload sleef/3.6.1 -r=imageclibs
 
       - name: Add lib torch
         run: |
