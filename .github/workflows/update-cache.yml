@@ -38,7 +38,7 @@ jobs:
             echo "Loaded from cache"
           else
             sudo conan profile detect 
-            sudo echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default
+            sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
 
       - name: Apply onnx patche
@@ -111,7 +111,7 @@ jobs:
             echo "Loaded from cache"
           else
             sudo conan profile detect
-            sudo echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default
+            sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
           sudo cat /root/.conan2/profiles/default
           sudo chmod 777 -R /root/.conan2
@@ -149,7 +149,7 @@ jobs:
             echo "Loaded from cache"
           else
             conan profile detect
-            sudo echo -e "[conf]\ntools.system.package_manager:mode=install" >> /Users/runner/.conan2/profiles/default
+            echo -e "[conf]\ntools.system.package_manager:mode=install" >> /Users/runner/.conan2/profiles/default
           fi
           cat /Users/runner/.conan2/profiles/default
           conan install . --profile profiles/profile_macos --output-folder=build --build=missing --format=json > build.json
