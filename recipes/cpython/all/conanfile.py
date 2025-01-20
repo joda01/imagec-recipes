@@ -173,8 +173,7 @@ class CPythonConan(ConanFile):
             if not self.options.shared and Version(self.version) >= "3.10":
                 # Static CPython on Windows is only loosely supported, see https://github.com/python/cpython/issues/110234
                 # 3.10 fails during the test, 3.11 fails during the build (missing symbol that seems to be DLL specific: PyWin_DLLhModule)
-                print("Try to build static with mingw")
-                #raise ConanInvalidConfiguration("Static msvc build disabled (>=3.10) due to \"AttributeError: module 'sys' has no attribute 'winver'\"")
+                raise ConanInvalidConfiguration("Static msvc build disabled (>=3.10) due to \"AttributeError: module 'sys' has no attribute 'winver'\"")
 
         if self.options.get_safe("with_curses", False) and not self.dependencies["ncurses"].options.with_widec:
             raise ConanInvalidConfiguration("cpython requires ncurses with wide character support")
