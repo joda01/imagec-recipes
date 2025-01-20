@@ -299,6 +299,9 @@ class LibtorchConan(ConanFile):
             self.requires("vulkan-loader/1.3.290.0")
         if self.options.with_mimalloc:
             self.requires("mimalloc/2.1.7")
+        if is_apple_os(self):
+            self.requires("pybind11/2.13.6")
+            self.requires("opentelemetry-cpp/1.17.0")
 
         # miniz cannot be unvendored due to being slightly modified
 
@@ -363,7 +366,7 @@ class LibtorchConan(ConanFile):
 
         # Keep only a restricted set of vendored dependencies.
         # Do it before build() to limit the amount of files to copy.
-        allowed = ["pocketfft", "kineto", "miniz-2.1.0", "protobuf"] # J.D keep protobuf
+        allowed = ["pocketfft", "kineto", "miniz-2.1.0", "protobuf", "opentelemetry-cpp"] # J.D keep protobuf, keep opentelemetry-cpp
         for path in Path(self.source_folder, "third_party").iterdir():
             if path.is_dir() and path.name not in allowed:
                 rmdir(self, path)
