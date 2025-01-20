@@ -363,7 +363,7 @@ class LibtorchConan(ConanFile):
 
         # Keep only a restricted set of vendored dependencies.
         # Do it before build() to limit the amount of files to copy.
-        allowed = ["pocketfft", "kineto", "miniz-2.1.0"]
+        allowed = ["pocketfft", "kineto", "miniz-2.1.0", "protobuf"] # J.D keep protobuf
         for path in Path(self.source_folder, "third_party").iterdir():
             if path.is_dir() and path.name not in allowed:
                 rmdir(self, path)
