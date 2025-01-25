@@ -42,35 +42,35 @@ jobs:
             sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
 
-      - name: Apply onnx patche
-        run: |
-          cd recipes/onnx/all
-          sudo conan create . --version=1.17.0
-          sudo conan upload onnx/1.17.0 -r=imageclibs
+      #- name: Apply onnx patche
+      #  run: |
+      #    cd recipes/onnx/all
+      #    sudo conan create . --version=1.17.0
+      #    sudo conan upload onnx/1.17.0 -r=imageclibs
 
-      - name: Add openblas 0.3.28
-        run: |
-          cd recipes/openblas/all
-          sudo conan create . --version=0.3.28 --build=missing
-          sudo conan upload openblas/0.3.28 -r=imageclibs
+      #- name: Add openblas 0.3.28
+      #  run: |
+      #    cd recipes/openblas/all
+      #    sudo conan create . --version=0.3.28 --build=missing
+      #    sudo conan upload openblas/0.3.28 -r=imageclibs
 
-      - name: Add openmp system
-        run: |
-          cd recipes/openmp/all
-          sudo conan create . --version=system --build=missing
-          sudo conan upload openmp/system -r=imageclibs
+      #- name: Add openmp system
+      #  run: |
+      #    cd recipes/openmp/all
+      #    sudo conan create . --version=system --build=missing
+      #    sudo conan upload openmp/system -r=imageclibs
 
-      - name: Add fbgemm 0.8.0
-        run: |
-          cd recipes/fbgemm/all
-          sudo conan create . --version=0.8.0 --build=missing
-          sudo conan upload fbgemm/0.8.0 -r=imageclibs
+      #- name: Add fbgemm 0.8.0
+      #  run: |
+      #    cd recipes/fbgemm/all
+      #    sudo conan create . --version=0.8.0 --build=missing
+      #    sudo conan upload fbgemm/0.8.0 -r=imageclibs
 
-      - name: Add sleef 3.6.1
-        run: |
-          cd recipes/sleef/all
-          sudo conan create . --version=3.6.1 --build=missing
-          sudo conan upload sleef/3.6.1 -r=imageclibs
+      #- name: Add sleef 3.6.1
+      #  run: |
+      #    cd recipes/sleef/all
+      #    sudo conan create . --version=3.6.1 --build=missing
+      #    sudo conan upload sleef/3.6.1 -r=imageclibs
 
       #- name: Add lib torch
       #  run: |
