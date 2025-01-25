@@ -1,0 +1,26 @@
+--- a/src/Utils.cc
++++ b/src/Utils.cc
+@@ -436,7 +436,8 @@ void* fbgemmAlignedAlloc(
+   aligned_mem = _aligned_malloc(size, align);
+   ret = 0;
+ #else
+-  ret = posix_memalign(&aligned_mem, align, size);
++  aligned_mem = _aligned_malloc(size, align);
++  ret = 0;
+ #endif
+   // Throw std::bad_alloc in the case of memory allocation failure.
+   if (raiseException || ret || aligned_mem == nullptr) {
+
+
+--- a/bench/AlignedVec.h
++++ b/bench/AlignedVec.h
+@@ -112,7 +112,8 @@ class aligned_allocator {
+     pv = _aligned_malloc(n * sizeof(T), Alignment);
+     ret = 0;
+ #else
+-    ret = posix_memalign(&pv, Alignment, n * sizeof(T));
++    pv = _aligned_malloc(n * sizeof(T), Alignment);
++    ret = 0;
+ #endif
+     // pv = aligned_alloc(Alignment, n * sizeof(T));
+ 

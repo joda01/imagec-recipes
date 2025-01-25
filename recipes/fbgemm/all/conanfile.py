@@ -68,8 +68,8 @@ class FbgemmConan(ConanFile):
 
     def validate(self):
         # https://github.com/pytorch/FBGEMM/issues/2074
-        if str(self.settings.arch).startswith("arm"):
-            raise ConanInvalidConfiguration("FBGEMM does not yet support ARM architectures")
+        #if str(self.settings.arch).startswith("arm"):
+        #    raise ConanInvalidConfiguration("FBGEMM does not yet support ARM architectures")
 
         check_min_cppstd(self, self._min_cppstd)
         minimum_version = self._compilers_minimum_version.get(str(self.settings.compiler), False)
@@ -83,7 +83,16 @@ class FbgemmConan(ConanFile):
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
-        apply_conandata_patches(self)
+     # Apply patches that should always be applied
+        self.output.info("Applying universal patches")
+        for patch_info in self.conan_data.get("patches", {}).get(str(self.version), {}).get("always", []):
+            patch(self, **patch_info)
+
+        # Apply patches specific to MinGW
+        if self.settings.compiler == "gcc" and self.settings.os == "Windows":
+            self.output.info("Applying MinGW-specific patches")
+            for patch_info in self.conan_data.get("patches", {}).get(str(self.version), {}).get("mingw", []):
+                patch(self, **patch_info)
 
     def generate(self):
         tc = CMakeToolchain(self)
@@ -95,8 +104,6 @@ class FbgemmConan(ConanFile):
         tc.variables["FBGEMM_BUILD_DOCS"] = False
         if not valid_min_cppstd(self, self._min_cppstd):
             tc.variables["CMAKE_CXX_STANDARD"] = self._min_cppstd
-        if self.settings.compiler == "gcc" and self.settings.os == "Windows":
-            tc.variables["CMAKE_CXX_FLAGS"] = "-D_MSC_VER=1900"
         tc.variables["CMAKE_C_STANDARD"] = 99
         tc.generate()
 
