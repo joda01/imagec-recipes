@@ -5,7 +5,7 @@ from conan.errors import ConanInvalidConfiguration, ConanException
 from conan.tools.build import check_min_cppstd, valid_min_cppstd
 from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 from conan.tools.env import VirtualBuildEnv
-from conan.tools.files import copy, export_conandata_patches, get, apply_conandata_patches, rmdir, replace_in_file
+from conan.tools.files import copy, export_conandata_patches, get, apply_conandata_patches, rmdir, replace_in_file, patch
 from conan.tools.scm import Version
 
 required_conan_version = ">=1.53.0"
@@ -31,6 +31,7 @@ class FbgemmConan(ConanFile):
         "shared": False,
         "fPIC": True,
     }
+    apply_mingw_patches = False
 
     @property
     def _min_cppstd(self):
@@ -56,6 +57,8 @@ class FbgemmConan(ConanFile):
     def configure(self):
         if self.options.shared:
             self.options.rm_safe("fPIC")
+        if self.settings.compiler == "gcc" and self.settings.os == "Windows":
+            self.apply_mingw_patches = True
 
     def layout(self):
         cmake_layout(self, src_folder="src")
@@ -89,9 +92,10 @@ class FbgemmConan(ConanFile):
             patch(self, **p, base_path=self.source_folder)
 
         # os specific patches
-        for p in self.conan_data["patches"].get("{}-{}".format(self.version, str(self.settings.os).lower()), []):
-            print(f"patching os specific files: {p['patch_file']}")
-            patch(self, **p, base_path=self.source_folder)
+        if self.apply_mingw_patches:
+            for p in self.conan_data["patches"].get("{}-{}".format(self.version, str(windows).lower()), []):
+                print(f"patching os specific files: {p['patch_file']}")
+                patch(self, **p, base_path=self.source_folder)
 
 
     def generate(self):
