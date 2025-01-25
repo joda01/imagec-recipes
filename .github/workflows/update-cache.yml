@@ -42,6 +42,11 @@ jobs:
             sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
 
+      - name: Patch cpython 3.12.7
+        run: |
+          cd recipes/cpython/all
+          sudo conan create . --version=3.12.7 --build=missing
+          sudo conan upload cpython/3.12.7 -r=imageclibs
       #- name: Apply onnx patche
       #  run: |
       #    cd recipes/onnx/all
