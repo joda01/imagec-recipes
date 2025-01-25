@@ -89,13 +89,15 @@ class FbgemmConan(ConanFile):
         # general patches
         for p in self.conan_data["patches"].get(self.version, []):
             print(f"patching general files: {p['patch_file']}")
-            patch(self, **p, base_path=self.source_folder)
+            if "mingw" not in p['patch_file']:
+                patch(self, **p, base_path=self.source_folder)
 
         # os specific patches
         if self.apply_mingw_patches:
-            for p in self.conan_data["patches"].get("{}-{}".format(self.version, str("windows").lower()), []):
+            for p in self.conan_data["patches"].get(self.version, []):
                 print(f"patching os specific files: {p['patch_file']}")
-                patch(self, **p, base_path=self.source_folder)
+                if "mingw" in p['patch_file']:
+                    patch(self, **p, base_path=self.source_folder)
 
 
     def generate(self):

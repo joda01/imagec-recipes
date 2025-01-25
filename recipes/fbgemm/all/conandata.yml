@@ -13,7 +13,6 @@ patches:
     - patch_file: "patches/0003-use-openmp-targets.patch"
       patch_description: "Use OpenMP targets instead of plain compiler flags"
       patch_type: "portability"
-  "0.8.0-windows":
     - patch_file: "patches/0.8.0-posix-mingw.patch"
       patch_description: "Remove posix commands for mingw build"
       patch_type: "portability"
