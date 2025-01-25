@@ -15,18 +15,20 @@ class ImageC(ConanFile):
     
 
     def requirements(self):
-        self.requires("eigen/3.4.0")
-        self.requires("qt/6.7.1")
-        self.requires("opencv/4.10.0")
-        self.requires("catch2/3.7.0")
-        self.requires("pugixml/1.14")
-        self.requires("nlohmann_json/3.11.3")
-        self.requires("libxlsxwriter/1.1.8")
-        self.requires("duckdb/1.1.0")
-        self.requires("onnx/1.17.0")
-        self.requires("libtorch/2.4.0")
-        self.requires("xkbcommon/1.6.0", override=True)
-        self.requires("libpq/15.5", override=True)
+        self.requires("fbgemm/0.8.0")
+
+        #self.requires("eigen/3.4.0")
+        #self.requires("qt/6.7.1")
+        #self.requires("opencv/4.10.0")
+        #self.requires("catch2/3.7.0")
+        #self.requires("pugixml/1.14")
+        #self.requires("nlohmann_json/3.11.3")
+        #self.requires("libxlsxwriter/1.1.8")
+        #self.requires("duckdb/1.1.0")
+        #self.requires("onnx/1.17.0")
+        #self.requires("libtorch/2.4.0")
+        #self.requires("xkbcommon/1.6.0", override=True)
+        #self.requires("libpq/15.5", override=True)
         # Libtorch deps
 
     def layout(self):

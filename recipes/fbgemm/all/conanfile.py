@@ -95,6 +95,8 @@ class FbgemmConan(ConanFile):
         tc.variables["FBGEMM_BUILD_DOCS"] = False
         if not valid_min_cppstd(self, self._min_cppstd):
             tc.variables["CMAKE_CXX_STANDARD"] = self._min_cppstd
+        if self.settings.compiler == "gcc" and self.settings.os == "Windows":
+            tc.variables["CMAKE_CXX_FLAGS"] = "-D_MSC_VER=1900"
         tc.variables["CMAKE_C_STANDARD"] = 99
         tc.generate()
 
