@@ -71,11 +71,11 @@ jobs:
       #    sudo conan create . --version=0.8.0 --build=missing
       #    sudo conan upload fbgemm/0.8.0 -r=imageclibs
 
-      #- name: Add sleef 3.6.1
-      #  run: |
-      #    cd recipes/sleef/all
-      #    sudo conan create . --version=3.6.1 --build=missing
-      #    sudo conan upload sleef/3.6.1 -r=imageclibs
+      - name: Add sleef 3.6.1
+        run: |
+          cd recipes/sleef/all
+          sudo conan create . --version=3.6.1 --build=missing
+          sudo conan upload sleef/3.6.1 -r=imageclibs
 
       - name: Add lib torch
         run: |
