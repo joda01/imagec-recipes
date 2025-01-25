@@ -81,13 +81,13 @@ class LibtorchConan(ConanFile):
         "with_fbgemm": True,
         "with_gflags": False,
         "with_glog": False,
-        "with_itt": False,
+        "with_itt": False,  # Not found in Windows (default = True)
         "with_kineto": True,
         "with_mimalloc": False,
         "with_nnpack": True,
         "with_numa": True,
         "with_opencl": False,
-        "with_openmp": True,
+        "with_openmp": False,  # Not found on MacOs (default = True)
         "with_qnnpack": True,
         "with_vulkan": True,
         "with_xnnpack": True,
