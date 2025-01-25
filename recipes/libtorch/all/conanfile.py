@@ -81,7 +81,7 @@ class LibtorchConan(ConanFile):
         "with_fbgemm": True,
         "with_gflags": False,
         "with_glog": False,
-        "with_itt": True,
+        "with_itt": False,
         "with_kineto": True,
         "with_mimalloc": False,
         "with_nnpack": True,
