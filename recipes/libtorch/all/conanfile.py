@@ -356,8 +356,7 @@ class LibtorchConan(ConanFile):
 
     def build_requirements(self):
         self.tool_requires("cmake/[>=3.18 <4]")
-        #if self.settings.os != "Windows":
-        #    self.tool_requires("cpython/[~3.12]")
+        self.tool_requires("cpython/[~3.12]")
         if self._depends_on_flatbuffers:
             self.tool_requires("flatbuffers/<host_version>")
 

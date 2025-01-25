@@ -11,6 +11,7 @@ build_type=Release
 
 [tool_requires]
 mingw-builds/13.2.0
+cpython/3.12.7
 
 [options]
 cpython/*:shared=True
