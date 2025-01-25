@@ -73,12 +73,12 @@ jobs:
 
       - name: Add sleef 3.6.1
         run: |
-          cd recipes/sleef/all
+          sudo conan export -r=imageclibs --version=3.6.1 recipes/sleef/all
           sudo conan upload sleef/3.6.1 -r=imageclibs
 
       - name: Add lib torch
         run: |
-          cd recipes/libtorch/all
+          sudo conan export -r=imageclibs --version=2.4.0 recipes/libtorch/all
           sudo conan upload libtorch/2.4.0 -r=imageclibs
 
   build-linux-cache:
