@@ -149,6 +149,7 @@ class LibtorchConan(ConanFile):
     }
     no_copy_source = True
     provides = ["miniz", "pocketfft", "kineto", "nnpack", "qnnpack", "opentelemetry-cpp"]
+    is_mac_os = False
 
     @property
     def _min_cppstd(self):
@@ -173,6 +174,8 @@ class LibtorchConan(ConanFile):
         copy(self, "conan-official-libtorch-vars.cmake", self.recipe_folder, os.path.join(self.export_sources_folder, "src"))
 
     def config_options(self):
+        if is_apple_os(self):
+            self.is_mac_os = True
         if self.settings.os == "Windows":
             del self.options.fPIC
             del self.options.with_qnnpack
@@ -367,7 +370,9 @@ class LibtorchConan(ConanFile):
 
         # Keep only a restricted set of vendored dependencies.
         # Do it before build() to limit the amount of files to copy.
-        allowed = ["pocketfft", "kineto", "miniz-2.1.0", "opentelemetry-cpp"]
+        allowed = ["pocketfft", "kineto", "miniz-2.1.0"]
+        if self.is_mac_os == True:
+            allowed = ["pocketfft", "kineto", "miniz-2.1.0", "opentelemetry-cpp", "protobuf"]
         for path in Path(self.source_folder, "third_party").iterdir():
             if path.is_dir() and path.name not in allowed:
                 rmdir(self, path)
