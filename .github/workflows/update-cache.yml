@@ -72,12 +72,6 @@ jobs:
           sudo conan create . --version=3.6.1 --build=missing
           sudo conan upload sleef/3.6.1 -r=imageclibs
 
-      - name: Patch cpython 3.12.7
-        run: |
-          cd recipes/cpython/all
-          sudo conan create . --version=3.12.7 --build=missing
-          sudo conan upload cpython/3.12.7 -r=imageclibs
-
       #- name: Add lib torch
       #  run: |
       #    cd recipes/libtorch/all
