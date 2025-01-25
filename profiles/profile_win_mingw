@@ -13,6 +13,7 @@ build_type=Release
 mingw-builds/13.2.0
 
 [options]
+cpython/*:shared=True
 qt/*:qtsvg=True
 qt/*:qtcharts=True
 qt/*:with_pq=False
@@ -31,4 +32,5 @@ opencv/*:with_imgcodec_hdr=False
 opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
-cpython/*:shared=True
+
+
