@@ -1,26 +1,554 @@
---- a/src/Utils.cc
-+++ b/src/Utils.cc
-@@ -436,7 +436,8 @@ void* fbgemmAlignedAlloc(
-   aligned_mem = _aligned_malloc(size, align);
-   ret = 0;
- #else
--  ret = posix_memalign(&aligned_mem, align, size);
-+  aligned_mem = _aligned_malloc(size, align);
-+  ret = 0;
- #endif
-   // Throw std::bad_alloc in the case of memory allocation failure.
-   if (raiseException || ret || aligned_mem == nullptr) {
+From 210b7a45c9eea5b0ec2d8d5c739f1a43b6da9df0 Mon Sep 17 00:00:00 2001
+From: CI <-ci@not-real.com>
+Date: Sat, 4 Nov 2023 12:26:33 +0100
+Subject: [PATCH 1/3] Adding mingw headers, so that it compiles with msys2
+ buildtools
 
+---
+ CMakeLists.txt                      | 54 ++++++++++++++++++++---------
+ bench/AlignedVec.h                  |  4 +--
+ bench/BenchUtils.h                  | 27 ++++++++-------
+ bench/CMakeLists.txt                |  4 +++
+ bench/RowwiseAdagradBenchmark.cc    | 28 +++++++++------
+ bench/SparseAdagradBenchmark.cc     | 29 ++++++++++------
+ bench/SparseDenseMMFP32Benchmark.cc | 14 ++++----
+ bench/SparseDenseMMInt8Benchmark.cc | 16 +++++----
+ include/fbgemm/FbgemmBuild.h        |  5 +++
+ src/Utils.cc                        |  4 +--
+ test/CMakeLists.txt                 |  6 ++++
+ 11 files changed, 125 insertions(+), 66 deletions(-)
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 134523e7d7..5751734050 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -236,32 +236,52 @@ message(WARNING "CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")
+ message(WARNING "==========")
+ 
+ if(NOT TARGET asmjit)
+-  #Download asmjit from github if ASMJIT_SRC_DIR is not specified.
+-  if(NOT DEFINED ASMJIT_SRC_DIR)
+-    set(ASMJIT_SRC_DIR "${FBGEMM_SOURCE_DIR}/third_party/asmjit"
+-      CACHE STRING "asmjit source directory from submodules")
+-  endif()
+-
+-  #build asmjit
+-  #For MSVC shared build, asmjit needs to be shared also.
+-  if (MSVC AND (FBGEMM_LIBRARY_TYPE STREQUAL "shared"))
+-    set(ASMJIT_STATIC OFF)
++  # Check if we are using MinGW and the asmjit header exists in the specified include directory
++  if(MINGW AND EXISTS "$ENV{MINGW_PREFIX}/include/asmjit")
++    message(STATUS "Using system-installed asmjit from $ENV{MINGW_PREFIX}")
++    
++    # Add an imported target for asmjit
++    add_library(asmjit SHARED IMPORTED GLOBAL)
++    
++    # Set the properties for the imported target
++    set_target_properties(asmjit PROPERTIES
++      IMPORTED_LOCATION "$ENV{MINGW_PREFIX}/bin/libasmjit.dll"
++      INTERFACE_INCLUDE_DIRECTORIES "$ENV{MINGW_PREFIX}/include"
++      IMPORTED_IMPLIB "$ENV{MINGW_PREFIX}/lib/libasmjit.dll.a"
++    )
+   else()
+-    set(ASMJIT_STATIC ON)
++    # ASMJIT_SRC_DIR is not defined, download asmjit from GitHub
++    if(NOT DEFINED ASMJIT_SRC_DIR)
++      set(ASMJIT_SRC_DIR "${FBGEMM_SOURCE_DIR}/third_party/asmjit"
++        CACHE STRING "asmjit source directory from submodules")
++    endif()
++
++    # Add the asmjit subdirectory from the specified source directory
++    add_subdirectory("${ASMJIT_SRC_DIR}" "${FBGEMM_BINARY_DIR}/asmjit")
+   endif()
+ 
+-  add_subdirectory("${ASMJIT_SRC_DIR}" "${FBGEMM_BINARY_DIR}/asmjit")
+-  set_property(TARGET asmjit PROPERTY POSITION_INDEPENDENT_CODE ON)
+-  # add a flag required for mac build
+-  if(NOT MSVC)
+-    target_compile_options(asmjit PRIVATE "-Wno-sign-conversion")
++  # Set the common properties for asmjit
++  if(NOT MINGW)
++    set_property(TARGET asmjit PROPERTY POSITION_INDEPENDENT_CODE ON)
++    # add a flag required for mac build
++    if(NOT MSVC)
++      target_compile_options(asmjit PRIVATE "-Wno-sign-conversion")
++    endif()
+   endif()
+ 
++  # Set additional compile options for Clang, if applicable
+   if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13.0.0)
+-    # See https://github.com/pytorch/pytorch/issues/74352, https://github.com/pytorch/FBGEMM/issues/1173
++  # See https://github.com/pytorch/pytorch/issues/74352, https://github.com/pytorch/FBGEMM/issues/1173
+     target_compile_options_if_supported(asmjit -Wno-deprecated-copy)
+     target_compile_options_if_supported(asmjit -Wno-unused-but-set-variable)
+   endif()
++
++  # Determine if asmjit should be built statically or dynamically
++  if ((MSVC OR MINGW) AND (FBGEMM_LIBRARY_TYPE STREQUAL "shared"))
++    set(ASMJIT_STATIC OFF)
++  else()
++    set(ASMJIT_STATIC ON)
++  endif()
+ endif()
+ 
+ if(NOT TARGET cpuinfo)
+diff --git a/bench/AlignedVec.h b/bench/AlignedVec.h
+index f99866e287..21cddc1e0f 100644
 --- a/bench/AlignedVec.h
 +++ b/bench/AlignedVec.h
-@@ -112,7 +112,8 @@ class aligned_allocator {
+@@ -108,7 +108,7 @@ class aligned_allocator {
+     // Mallocator wraps malloc().
+     void* pv = nullptr;
+     int ret;
+-#ifdef _MSC_VER
++#ifdef _WIN32
      pv = _aligned_malloc(n * sizeof(T), Alignment);
      ret = 0;
  #else
--    ret = posix_memalign(&pv, Alignment, n * sizeof(T));
-+    pv = _aligned_malloc(n * sizeof(T), Alignment);
-+    ret = 0;
- #endif
-     // pv = aligned_alloc(Alignment, n * sizeof(T));
+@@ -126,7 +126,7 @@ class aligned_allocator {
+   }
  
+   void deallocate(T* const p, const std::size_t /*n*/) const {
+-#ifdef _MSC_VER
++#ifdef _WIN32
+     _aligned_free(p);
+ #else
+     free(p);
+diff --git a/bench/BenchUtils.h b/bench/BenchUtils.h
+index 91376e3c08..0470677490 100644
+--- a/bench/BenchUtils.h
++++ b/bench/BenchUtils.h
+@@ -367,19 +367,22 @@ void performance_test(
+       }
+ 
+ #if defined(USE_MKL) || defined(USE_BLAS)
+-      // Compare results
+-      for (size_t i = 0; i < C_ref[0].size(); i++) {
+-        if (std::abs(C_ref[0][i] - C_fb[0][i]) > 1e-3) {
+-          fprintf(
+-              stderr,
+-              "Error: too high diff between fp32 ref %f and fp16 %f at %ld\n",
+-              C_ref[0][i],
+-              C_fb[0][i],
+-              i);
+-          return;
+-        }
+-      }
++  // Compare results
++  for (size_t i = 0; i < C_ref[0].size(); i++) {
++    if (std::abs(C_ref[0][i] - C_fb[0][i]) > 1e-3) {
++      // Use different format specifiers for MinGW and others
++      #ifdef __MINGW32__
++        fprintf(stderr, "Error: too high diff between fp32 ref %f and fp16 %f at %llu\n",
++                C_ref[0][i], C_fb[0][i], static_cast<unsigned long long>(i));
++      #else
++        fprintf(stderr, "Error: too high diff between fp32 ref %f and fp16 %f at %zu\n",
++                C_ref[0][i], C_fb[0][i], i);
++      #endif
++      return;
++    }
++  }
+ #endif
++
+     }
+ 
+ #ifdef USE_MKL
+diff --git a/bench/CMakeLists.txt b/bench/CMakeLists.txt
+index 8b07789428..5dea5374ab 100644
+--- a/bench/CMakeLists.txt
++++ b/bench/CMakeLists.txt
+@@ -65,6 +65,10 @@ macro(add_benchmark BENCHNAME)
+   if (${BLAS_FOUND})
+     target_compile_options(${BENCHNAME} PRIVATE "-DUSE_BLAS")
+     target_link_libraries(${BENCHNAME} "${BLAS_LIBRARIES}")
++    if (DEFINED ENV{MINGW_PREFIX})
++    # Include the directory using the value of the environment variable
++    include_directories("$ENV{MINGW_PREFIX}/include/openblas")
++  endif()
+   endif()
+ 
+   set_target_properties(${BENCHNAME} PROPERTIES FOLDER test)
+diff --git a/bench/RowwiseAdagradBenchmark.cc b/bench/RowwiseAdagradBenchmark.cc
+index ac7fa01c42..39074f0ada 100644
+--- a/bench/RowwiseAdagradBenchmark.cc
++++ b/bench/RowwiseAdagradBenchmark.cc
+@@ -167,19 +167,27 @@ void run_benchmark(
+     }
+   }
+ 
+-  for (size_t i = 0; i < w.size(); ++i) {
+-    assert(fabs(w[i] - w_ref[i]) < 1e-5);
+-    if (fabs(w[i] - w_ref[i]) >= 1e-5) {
+-      fprintf(stderr, "%ld %f %f\n", i, w[i], w_ref[i]);
+-    }
++for (size_t i = 0; i < w.size(); ++i) {
++  assert(fabs(w[i] - w_ref[i]) < 1e-5);
++  if (fabs(w[i] - w_ref[i]) >= 1e-5) {
++    #ifdef __MINGW32__
++      fprintf(stderr, "%llu %f %f\n", static_cast<unsigned long long>(i), w[i], w_ref[i]);
++    #else
++      fprintf(stderr, "%zu %f %f\n", i, w[i], w_ref[i]);
++    #endif
+   }
++}
+ 
+-  for (size_t i = 0; i < h.size(); ++i) {
+-    assert(fabs(h[i] - h_ref[i]) < 1e-5);
+-    if (fabs(h[i] - h_ref[i]) >= 1e-5) {
+-      fprintf(stderr, "%ld %f %f\n", i, h[i], h_ref[i]);
+-    }
++for (size_t i = 0; i < h.size(); ++i) {
++  assert(fabs(h[i] - h_ref[i]) < 1e-5);
++  if (fabs(h[i] - h_ref[i]) >= 1e-5) {
++    #ifdef __MINGW32__
++      fprintf(stderr, "%llu %f %f\n", static_cast<unsigned long long>(i), h[i], h_ref[i]);
++    #else
++      fprintf(stderr, "%zu %f %f\n", i, h[i], h_ref[i]);
++    #endif
+   }
++}
+ 
+   cout << "indices: " << (isIndex64b ? " 64bits " : " 32bits ") << " | ";
+   cout << "weight_decay: " << setw(1) << adjust_weight_decay << " | ";
+diff --git a/bench/SparseAdagradBenchmark.cc b/bench/SparseAdagradBenchmark.cc
+index b871b8ff9d..951632c01f 100644
+--- a/bench/SparseAdagradBenchmark.cc
++++ b/bench/SparseAdagradBenchmark.cc
+@@ -174,19 +174,28 @@ void run_benchmark(
+     }
+   }
+ 
+-  for (size_t i = 0; i < w.size(); ++i) {
+-    assert(fabs(w[i] - w_ref[i]) < 1e-5);
+-    if (fabs(w[i] - w_ref[i]) >= 1e-5) {
+-      fprintf(stderr, "%ld %f %f\n", i, w[i], w_ref[i]);
+-    }
++for (size_t i = 0; i < w.size(); ++i) {
++  assert(fabs(w[i] - w_ref[i]) < 1e-5);
++  if (fabs(w[i] - w_ref[i]) >= 1e-5) {
++    #ifdef __MINGW32__
++      fprintf(stderr, "%llu %f %f\n", static_cast<unsigned long long>(i), w[i], w_ref[i]);
++    #else
++      fprintf(stderr, "%zu %f %f\n", i, w[i], w_ref[i]);
++    #endif
+   }
++}
+ 
+-  for (size_t i = 0; i < h.size(); ++i) {
+-    assert(fabs(h[i] - h_ref[i]) < 1e-5);
+-    if (fabs(h[i] - h_ref[i]) >= 1e-5) {
+-      fprintf(stderr, "%ld %f %f\n", i, h[i], h_ref[i]);
+-    }
++for (size_t i = 0; i < h.size(); ++i) {
++  assert(fabs(h[i] - h_ref[i]) < 1e-5);
++  if (fabs(h[i] - h_ref[i]) >= 1e-5) {
++    #ifdef __MINGW32__
++      fprintf(stderr, "%llu %f %f\n", static_cast<unsigned long long>(i), h[i], h_ref[i]);
++    #else
++      fprintf(stderr, "%zu %f %f\n", i, h[i], h_ref[i]);
++    #endif
+   }
++}
++
+ 
+   cout << "indices: " << (isIndex64b ? " 64bits " : " 32bits ") << " | ";
+   cout << "weight_decay: " << setw(1) << adjust_weight_decay << " | ";
+diff --git a/bench/SparseDenseMMFP32Benchmark.cc b/bench/SparseDenseMMFP32Benchmark.cc
+index ba0240d267..cea84ffd9d 100644
+--- a/bench/SparseDenseMMFP32Benchmark.cc
++++ b/bench/SparseDenseMMFP32Benchmark.cc
+@@ -112,16 +112,18 @@ int main(int, char**) {
+       // Compare results
+       for (size_t i = 0; i < ctDataRef.size(); i++) {
+         if (std::abs(ctDataRef[i] - ctDataIntrin[i]) > 1e-3) {
+-          fprintf(
+-              stderr,
+-              "Error: Results differ ref %f and test %f at %ld\n",
+-              ctDataRef[i],
+-              ctDataIntrin[i],
+-              i);
++          #ifdef __MINGW32__
++            fprintf(stderr, "Error: Results differ ref %f and test %f at %llu\n",
++                    ctDataRef[i], ctDataIntrin[i], static_cast<unsigned long long>(i));
++          #else
++            fprintf(stderr, "Error: Results differ ref %f and test %f at %zu\n",
++                    ctDataRef[i], ctDataIntrin[i], i);
++          #endif
+           return 1;
+         }
+       }
+ 
++
+       double effective_gflops_intrin = effective_flop / secs_intrin / 1e9;
+       cout << "[" << setw(5) << index << "]" << setw(7) << m << setw(7) << n
+            << setw(7) << k << fixed << setw(7) << setprecision(2) << fnz
+diff --git a/bench/SparseDenseMMInt8Benchmark.cc b/bench/SparseDenseMMInt8Benchmark.cc
+index 3a92d1bf5c..00e2d1e5b0 100644
+--- a/bench/SparseDenseMMInt8Benchmark.cc
++++ b/bench/SparseDenseMMInt8Benchmark.cc
+@@ -162,18 +162,20 @@ int main(int, char**) {
+       // "ctDataIntrin_u8");
+       //
+       // Compare results
+-      for (size_t i = 0; i < ctDataRef.size(); i++) {
++     for (size_t i = 0; i < ctDataRef.size(); i++) {
+         if (std::abs(ctDataRef_u8[i] - ctDataIntrin_u8[i]) > 0) {
+-          fprintf(
+-              stderr,
+-              "Error: Results differ ref %d and test %d at %ld\n",
+-              ctDataRef_u8[i],
+-              ctDataIntrin_u8[i],
+-              i);
++          #ifdef __MINGW32__
++            fprintf(stderr, "Error: Results differ ref %hhu and test %hhu at %llu\n",
++                    ctDataRef_u8[i], ctDataIntrin_u8[i], static_cast<unsigned long long>(i));
++          #else
++            fprintf(stderr, "Error: Results differ ref %hhu and test %hhu at %zu\n",
++                    ctDataRef_u8[i], ctDataIntrin_u8[i], i);
++          #endif
+           return 1;
+         }
+       }
+ 
++
+       double effective_gflops_intrin = effective_flop / secs_intrin / 1e9;
+       cout << "[" << setw(5) << index << "]" << setw(7) << m << setw(7) << n
+            << setw(7) << k << fixed << setw(7) << setprecision(2) << fnz
+diff --git a/include/fbgemm/FbgemmBuild.h b/include/fbgemm/FbgemmBuild.h
+index 4b3a1f8343..4cfcc3b34e 100644
+--- a/include/fbgemm/FbgemmBuild.h
++++ b/include/fbgemm/FbgemmBuild.h
+@@ -10,6 +10,11 @@
+ 
+ // For details about dllexport/dllimport, checkout the following SO question
+ // https://stackoverflow.com/questions/57999/what-is-the-difference-between-dllexport-and-dllimport
++#if defined(__MINGW32__)
++#ifndef FBGEMM_STATIC
++#define FBGEMM_STATIC//I failed with cmake, please help me
++#endif
++#endif
+ #if !defined(FBGEMM_API)
+ #if defined(FBGEMM_STATIC)
+ #define FBGEMM_API
+diff --git a/src/Utils.cc b/src/Utils.cc
+index c61b1a4dd1..110f02854e 100644
+--- a/src/Utils.cc
++++ b/src/Utils.cc
+@@ -429,7 +429,7 @@ void* fbgemmAlignedAlloc(
+     bool raiseException /*=false*/) {
+   void* aligned_mem = nullptr;
+   int ret;
+-#ifdef _MSC_VER
++#ifdef _WIN32
+   aligned_mem = _aligned_malloc(size, align);
+   ret = 0;
+ #else
+@@ -443,7 +443,7 @@ void* fbgemmAlignedAlloc(
+ }
+ 
+ void fbgemmAlignedFree(void* p) {
+-#ifdef _MSC_VER
++#ifdef _WIN32
+   _aligned_free(p);
+ #else
+   free(p);
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 2cffddf608..d9adf2524a 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -47,6 +47,7 @@ if(${OpenMP_FOUND})
+ endif()
+ 
+ macro(add_gtest TESTNAME)
++
+   add_executable(${TESTNAME} ${ARGN}
+     ../bench/BenchUtils.cc
+     EmbeddingSpMDMTestUtils.cc
+@@ -62,6 +63,11 @@ macro(add_gtest TESTNAME)
+       target_compile_definitions(${TESTNAME} PRIVATE FBGEMM_STATIC)
+     endif()
+   else(MSVC)
++    if(MINGW)
++    #if (FBGEMM_LIBRARY_TYPE STREQUAL "static")
++      target_compile_definitions(${TESTNAME} PRIVATE FBGEMM_STATIC)
++    #endif()
++    endif()
+     target_compile_options(${TESTNAME} PRIVATE
+      "-m64" "-mavx2" "-mfma" "-masm=intel")
+   endif(MSVC)
+
+From 992299d5a76757fe27b8f7b78c2069803afc3074 Mon Sep 17 00:00:00 2001
+From: CI <-ci@not-real.com>
+Date: Sat, 4 Nov 2023 12:45:42 +0100
+Subject: [PATCH 2/3] Undo adding asmjit shared on mingw
+
+---
+ CMakeLists.txt | 62 ++++++++++++++++++++------------------------------
+ 1 file changed, 25 insertions(+), 37 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5751734050..7cc06c3b2d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -192,6 +192,14 @@ else(MSVC)
+   string(APPEND CMAKE_CXX_FLAGS " -Werror")
+   string(APPEND CMAKE_CXX_FLAGS " -Wno-deprecated-declarations")
+   string(APPEND CMAKE_CXX_FLAGS " -Wimplicit-fallthrough")
++  if(MINGW)
++    if(FBGEMM_LIBRARY_TYPE STREQUAL "static")
++    target_compile_definitions(fbgemm_generic PRIVATE ASMJIT_STATIC)
++    target_compile_definitions(fbgemm_avx2 PRIVATE ASMJIT_STATIC)
++    target_compile_definitions(fbgemm_avx512 PRIVATE ASMJIT_STATIC)
++    endif()
++  endif()
++
+   target_compile_options(fbgemm_avx2 PRIVATE
+     "-m64" "-mavx2" "-mf16c" "-mfma")
+   target_compile_options(fbgemm_avx512 PRIVATE
+@@ -236,52 +244,32 @@ message(WARNING "CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")
+ message(WARNING "==========")
+ 
+ if(NOT TARGET asmjit)
+-  # Check if we are using MinGW and the asmjit header exists in the specified include directory
+-  if(MINGW AND EXISTS "$ENV{MINGW_PREFIX}/include/asmjit")
+-    message(STATUS "Using system-installed asmjit from $ENV{MINGW_PREFIX}")
+-    
+-    # Add an imported target for asmjit
+-    add_library(asmjit SHARED IMPORTED GLOBAL)
+-    
+-    # Set the properties for the imported target
+-    set_target_properties(asmjit PROPERTIES
+-      IMPORTED_LOCATION "$ENV{MINGW_PREFIX}/bin/libasmjit.dll"
+-      INTERFACE_INCLUDE_DIRECTORIES "$ENV{MINGW_PREFIX}/include"
+-      IMPORTED_IMPLIB "$ENV{MINGW_PREFIX}/lib/libasmjit.dll.a"
+-    )
+-  else()
+-    # ASMJIT_SRC_DIR is not defined, download asmjit from GitHub
+-    if(NOT DEFINED ASMJIT_SRC_DIR)
+-      set(ASMJIT_SRC_DIR "${FBGEMM_SOURCE_DIR}/third_party/asmjit"
+-        CACHE STRING "asmjit source directory from submodules")
+-    endif()
++  #Download asmjit from github if ASMJIT_SRC_DIR is not specified.
++  if(NOT DEFINED ASMJIT_SRC_DIR)
++    set(ASMJIT_SRC_DIR "${FBGEMM_SOURCE_DIR}/third_party/asmjit"
++      CACHE STRING "asmjit source directory from submodules")
++  endif()
+ 
+-    # Add the asmjit subdirectory from the specified source directory
+-    add_subdirectory("${ASMJIT_SRC_DIR}" "${FBGEMM_BINARY_DIR}/asmjit")
++  #build asmjit
++  #For MSVC shared build, asmjit needs to be shared also.
++  if (MSVC AND (FBGEMM_LIBRARY_TYPE STREQUAL "shared"))
++    set(ASMJIT_STATIC OFF)
++  else()
++    set(ASMJIT_STATIC ON)
+   endif()
+ 
+-  # Set the common properties for asmjit
+-  if(NOT MINGW)
+-    set_property(TARGET asmjit PROPERTY POSITION_INDEPENDENT_CODE ON)
+-    # add a flag required for mac build
+-    if(NOT MSVC)
+-      target_compile_options(asmjit PRIVATE "-Wno-sign-conversion")
+-    endif()
++  add_subdirectory("${ASMJIT_SRC_DIR}" "${FBGEMM_BINARY_DIR}/asmjit")
++  set_property(TARGET asmjit PROPERTY POSITION_INDEPENDENT_CODE ON)
++  # add a flag required for mac build
++  if(NOT MSVC)
++    target_compile_options(asmjit PRIVATE "-Wno-sign-conversion")
+   endif()
+ 
+-  # Set additional compile options for Clang, if applicable
+   if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13.0.0)
+-  # See https://github.com/pytorch/pytorch/issues/74352, https://github.com/pytorch/FBGEMM/issues/1173
++    # See https://github.com/pytorch/pytorch/issues/74352, https://github.com/pytorch/FBGEMM/issues/1173
+     target_compile_options_if_supported(asmjit -Wno-deprecated-copy)
+     target_compile_options_if_supported(asmjit -Wno-unused-but-set-variable)
+   endif()
+-
+-  # Determine if asmjit should be built statically or dynamically
+-  if ((MSVC OR MINGW) AND (FBGEMM_LIBRARY_TYPE STREQUAL "shared"))
+-    set(ASMJIT_STATIC OFF)
+-  else()
+-    set(ASMJIT_STATIC ON)
+-  endif()
+ endif()
+ 
+ if(NOT TARGET cpuinfo)
+
+From 77cb1f98585d77aebd6ba1d1d9a456b8054386cb Mon Sep 17 00:00:00 2001
+From: CI <-ci@not-real.com>
+Date: Fri, 10 Nov 2023 22:03:36 +0100
+Subject: [PATCH 3/3] Remove Mingw dependent things
+
+to compile you will do it like this for mingw:
+cmake -G"MSYS Makefiles" -DFBGEMM_LIBRARY_TYPE=shared -DBLAS_INCLUDE_DIRS="$MINGW_PREFIX/include/openblas" ..
+I hope this is okay
+---
+ CMakeLists.txt               |  2 +-
+ bench/CMakeLists.txt         | 10 +++++-----
+ include/fbgemm/FbgemmBuild.h |  5 -----
+ 3 files changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7cc06c3b2d..682bafef46 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -252,7 +252,7 @@ if(NOT TARGET asmjit)
+ 
+   #build asmjit
+   #For MSVC shared build, asmjit needs to be shared also.
+-  if (MSVC AND (FBGEMM_LIBRARY_TYPE STREQUAL "shared"))
++  if ((MSVC OR MINGW) AND (FBGEMM_LIBRARY_TYPE STREQUAL "shared"))
+     set(ASMJIT_STATIC OFF)
+   else()
+     set(ASMJIT_STATIC ON)
+diff --git a/bench/CMakeLists.txt b/bench/CMakeLists.txt
+index 5dea5374ab..e06242e479 100644
+--- a/bench/CMakeLists.txt
++++ b/bench/CMakeLists.txt
+@@ -65,16 +65,13 @@ macro(add_benchmark BENCHNAME)
+   if (${BLAS_FOUND})
+     target_compile_options(${BENCHNAME} PRIVATE "-DUSE_BLAS")
+     target_link_libraries(${BENCHNAME} "${BLAS_LIBRARIES}")
+-    if (DEFINED ENV{MINGW_PREFIX})
+-    # Include the directory using the value of the environment variable
+-    include_directories("$ENV{MINGW_PREFIX}/include/openblas")
+-  endif()
++    target_include_directories(${BENCHNAME} PRIVATE "${BLAS_INCLUDE_DIRS}")
+   endif()
+ 
+   set_target_properties(${BENCHNAME} PROPERTIES FOLDER test)
+ endmacro()
+ 
+-if(FBGEMM_BUILD_BENCHMARKS)
++if(FBGEMM_BUILD_BENCHMARKS) 
+ 
+   set(BENCHMARKS "")
+ 
+@@ -84,6 +81,9 @@ if(FBGEMM_BUILD_BENCHMARKS)
+     get_filename_component(BENCH_FILE_ONLY "${BENCH_FILE}" NAME)
+     add_benchmark("${BENCH_NAME}"
+       "${BENCH_FILE_ONLY}")
++    if(FBGEMM_LIBRARY_TYPE STREQUAL "static") #Needed by MSVC and MinGW
++      target_compile_definitions("${BENCH_NAME}" PRIVATE FBGEMM_STATIC)
++    endif()
+     list(APPEND BENCHMARKS "${BENCH_NAME}")
+   endforeach()
+ 
+diff --git a/include/fbgemm/FbgemmBuild.h b/include/fbgemm/FbgemmBuild.h
+index 4cfcc3b34e..4b3a1f8343 100644
+--- a/include/fbgemm/FbgemmBuild.h
++++ b/include/fbgemm/FbgemmBuild.h
+@@ -10,11 +10,6 @@
+ 
+ // For details about dllexport/dllimport, checkout the following SO question
+ // https://stackoverflow.com/questions/57999/what-is-the-difference-between-dllexport-and-dllimport
+-#if defined(__MINGW32__)
+-#ifndef FBGEMM_STATIC
+-#define FBGEMM_STATIC//I failed with cmake, please help me
+-#endif
+-#endif
+ #if !defined(FBGEMM_API)
+ #if defined(FBGEMM_STATIC)
+ #define FBGEMM_API
