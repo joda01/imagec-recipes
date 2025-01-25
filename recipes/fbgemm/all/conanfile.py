@@ -83,16 +83,16 @@ class FbgemmConan(ConanFile):
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
-     # Apply patches that should always be applied
-        self.output.info("Applying universal patches")
-        for patch_info in self.conan_data.get("patches", {}).get(str(self.version), {}).get("always", []):
-            patch(self, **patch_info)
+        # general patches
+        for p in self.conan_data["patches"].get(self.version, []):
+            print(f"patching general files: {p['patch_file']}")
+            patch(self, **p, base_path=self.source_folder)
 
-        # Apply patches specific to MinGW
-        if self.settings.compiler == "gcc" and self.settings.os == "Windows":
-            self.output.info("Applying MinGW-specific patches")
-            for patch_info in self.conan_data.get("patches", {}).get(str(self.version), {}).get("mingw", []):
-                patch(self, **patch_info)
+        # os specific patches
+        for p in self.conan_data["patches"].get("{}-{}".format(self.version, str(self.settings.os).lower()), []):
+            print(f"patching os specific files: {p['patch_file']}")
+            patch(self, **p, base_path=self.source_folder)
+
 
     def generate(self):
         tc = CMakeToolchain(self)
