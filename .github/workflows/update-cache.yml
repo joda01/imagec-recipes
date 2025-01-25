@@ -77,11 +77,11 @@ jobs:
       #    sudo conan create . --version=3.6.1 --build=missing
       #    sudo conan upload sleef/3.6.1 -r=imageclibs
 
-      #- name: Add lib torch
-      #  run: |
-      #    cd recipes/libtorch/all
-      #    sudo conan create . --version=2.4.0 --build=missing
-      #    sudo conan upload libtorch/2.4.0 -r=imageclibs
+      - name: Add lib torch
+        run: |
+          cd recipes/libtorch/all
+          sudo conan create . --version=2.4.0 --build=missing
+          sudo conan upload libtorch/2.4.0 -r=imageclibs
 
   build-linux-cache:
     needs:
