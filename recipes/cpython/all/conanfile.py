@@ -51,7 +51,7 @@ class CPythonConan(ConanFile):
         "docstrings": True,
         "pymalloc": True,
         "with_bz2": True,
-        "with_gdbm": True,
+        "with_gdbm": False,
         "with_nis": False,
         "with_sqlite3": True,
         "with_tkinter": True,
