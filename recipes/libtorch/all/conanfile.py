@@ -301,7 +301,7 @@ class LibtorchConan(ConanFile):
             self.requires("mimalloc/2.1.7")
         if is_apple_os(self):
             self.requires("pybind11/2.13.6")
-            self.requires("opentelemetry-cpp/1.17.0")
+            #self.requires("opentelemetry-cpp/1.17.0")
 
         # miniz cannot be unvendored due to being slightly modified
 
