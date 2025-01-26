@@ -13,7 +13,6 @@ class ImageC(ConanFile):
     generators = "CMakeDeps", "CMakeToolchain"
     exports_sources = "src/*"
     
-
     def requirements(self):
         #self.requires("eigen/3.4.0")
         #self.requires("qt/6.7.1")
@@ -24,6 +23,7 @@ class ImageC(ConanFile):
         #self.requires("libxlsxwriter/1.1.8")
         #self.requires("duckdb/1.1.0")
         #self.requires("onnx/1.17.0")
+        self.requires("sleef/3.6.1")
         self.requires("libtorch/2.4.0")
         self.requires("protobuf/3.21.12", override=True)
         #self.requires("xkbcommon/1.6.0", override=True)
