@@ -81,8 +81,8 @@ class LibtorchConan(ConanFile):
         "with_fbgemm": True,
         "with_gflags": False,
         "with_glog": False,
-        "with_itt": False,  # Not found in Windows (default = True)
-        "with_kineto": True,
+        "with_itt": False,  # Not found on Windows (default = True)
+        "with_kineto": False, # Not build on MacOs
         "with_mimalloc": False,
         "with_nnpack": True,
         "with_numa": True,
@@ -201,7 +201,8 @@ class LibtorchConan(ConanFile):
             self.options.with_fbgemm = False
         if not is_apple_os(self) or self.settings.os not in ["Linux", "Android"]:
             del self.options.with_nnpack
-        self.options.with_itt = self.settings.arch in ["x86", "x86_64"]
+        # J.D There is an option to enable or disable it, this should not be overidden
+        #self.options.with_itt = self.settings.arch in ["x86", "x86_64"]
 
     def configure(self):
         if self.options.shared:
