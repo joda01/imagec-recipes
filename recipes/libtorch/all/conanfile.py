@@ -176,6 +176,8 @@ class LibtorchConan(ConanFile):
     def config_options(self):
         if is_apple_os(self):
             self.is_mac_os = True
+            # Apple does not support NN packages
+            self.options.with_qnnpack = False
         if self.settings.os == "Windows":
             del self.options.fPIC
             del self.options.with_qnnpack
@@ -201,9 +203,6 @@ class LibtorchConan(ConanFile):
             self.options.with_fbgemm = False
         if not is_apple_os(self) or self.settings.os not in ["Linux", "Android"]:
             del self.options.with_nnpack
-        if is_apple_os(self):
-            # Apple does not support NN packages
-            del self.options.with_qnnpack
         # J.D There is an option to enable or disable it, this should not be overidden
         #self.options.with_itt = self.settings.arch in ["x86", "x86_64"]
 
@@ -674,11 +673,11 @@ class LibtorchConan(ConanFile):
             self.cpp_info.components["pytorch_qnnpack"].requires.extend([
                 "clog", "cpuinfo::cpuinfo", "fp16::fp16", "fxdiv::fxdiv", "psimd::psimd", "pthreadpool::pthreadpool"
             ])
-        elif is_apple_os(self):
-            # J.D. MacOS needs fp16 event with_qnnpack is FALSE
-            self.cpp_info.components["pytorch_qnnpack"].requires.extend([
-                "fp16::fp16"
-            ])
+        #elif is_apple_os(self):
+        #    # J.D. MacOS needs fp16 event with_qnnpack is FALSE
+        #    self.cpp_info.components["pytorch_qnnpack"].requires.extend([
+        #        "fp16::fp16"
+        #    ])
 
         if self.options.with_kineto:
             self.cpp_info.components["kineto"].libs = ["kineto"]
