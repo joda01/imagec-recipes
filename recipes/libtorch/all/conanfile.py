@@ -633,7 +633,7 @@ class LibtorchConan(ConanFile):
             return ["fp16::fp16"] if self.options.get_safe("with_qnnpack",False) == False else []
 
         def _pybind():
-            return ["pybind11::pybind11"] if self.is_mac_os == False else []
+            return ["pybind11::pybind11"] if self.is_mac_os == True else []
         
         self.cpp_info.set_property("cmake_file_name", "Torch")
 
