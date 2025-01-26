@@ -84,6 +84,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: ubuntu-22.04
+    if: false  # This condition ensures the job is never executed
 
     steps:
       - uses: actions/checkout@v4
@@ -127,6 +128,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: macos-14
+    if: false  # This condition ensures the job is never executed
 
     steps:
       - uses: actions/checkout@v4
@@ -185,6 +187,8 @@ jobs:
 
       - name: Build with Conan    
         run: |
+          echo "C:/hostedtoolcache/windows/Python/3.10.11/x64/python3" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          python --version
           if (Test-Path "C:\Users\runneradmin\.conan2\profiles\default") {
             Write-Host "Loaded from cache!"
           } else {
