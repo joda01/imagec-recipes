@@ -1,4 +1,6 @@
 import os
+import shutil
+
 from pathlib import Path
 
 from conan import ConanFile
@@ -10,7 +12,7 @@ from conan.tools.env import VirtualBuildEnv, Environment
 from conan.tools.files import apply_conandata_patches, copy, export_conandata_patches, get, rm, rmdir, save
 from conan.tools.microsoft import is_msvc, is_msvc_static_runtime
 from conan.tools.scm import Version
-from conan.tools.system import which
+
 
 required_conan_version = ">=1.60.0 <2 || >=2.0.6"
 
@@ -526,7 +528,7 @@ class LibtorchConan(ConanFile):
             self._regenerate_flatbuffers()
         cmake = CMake(self)
         if self.is_windows:
-            cmake.configure(args=[f"-DPYTHON_EXECUTABLE={which('python')}"])
+            cmake.configure(args=[f"-DPYTHON_EXECUTABLE={shutil.which('python')}"])
         else:
             cmake.configure()
 
