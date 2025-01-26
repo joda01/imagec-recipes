@@ -478,6 +478,9 @@ class LibtorchConan(ConanFile):
         tc.variables["CONAN_LIBTORCH_USE_PTHREADPOOL"] = self._depends_on_pthreadpool
         tc.variables["CONAN_LIBTORCH_USE_SLEEF"] = self._depends_on_sleef
 
+        if self.is_windows:
+            tc.variables["PYTHON_EXECUTABLE"]=shutil.which('python')
+        
         tc.generate()
 
         deps = CMakeDeps(self)
@@ -527,10 +530,7 @@ class LibtorchConan(ConanFile):
         if self._depends_on_flatbuffers:
             self._regenerate_flatbuffers()
         cmake = CMake(self)
-        if self.is_windows:
-            cmake.configure(args=[f"-DPYTHON_EXECUTABLE={shutil.which('python')}"])
-        else:
-            cmake.configure()
+        cmake.configure()
 
         try:
             cmake.build()
@@ -632,7 +632,7 @@ class LibtorchConan(ConanFile):
         def _fp16():
             return ["fp16::fp16"] if self.options.get_safe("with_qnnpack",False) == False else []
 
-        def _pybind()
+        def _pybind():
             return ["pybind11::pybind11"] if self.is_mac_os == False else []
         
         self.cpp_info.set_property("cmake_file_name", "Torch")
