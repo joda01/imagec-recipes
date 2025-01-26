@@ -632,6 +632,9 @@ class LibtorchConan(ConanFile):
         def _fp16():
             return ["fp16::fp16"] if self.options.get_safe("with_qnnpack",False) == False else []
 
+        def _pybind()
+            return ["pybind11::pybind11"] if self.is_mac_os == False else []
+        
         self.cpp_info.set_property("cmake_file_name", "Torch")
 
         # Export official CMake variables
@@ -669,7 +672,7 @@ class LibtorchConan(ConanFile):
         self.cpp_info.components["torch_cpu_link_order_workaround"].requires.extend(
             ["_headers", "c10", "eigen::eigen", "fmt::fmt", "foxi::foxi"] +
             _fbgemm() + _sleef() + _onednn() + _protobuf() + _fbgemm() + _kineto() + _openblas() + _lapack() +
-            _vulkan() + _opencl() + _openmp() + _nnpack() + _xnnpack() + _qnnpack() + _itt() + _fp16()
+            _vulkan() + _opencl() + _openmp() + _nnpack() + _xnnpack() + _qnnpack() + _itt() + _fp16() + _pybind()
         )
         if self.settings.os == "Linux":
             self.cpp_info.components["torch_cpu_link_order_workaround"].system_libs.extend(["dl", "m", "pthread", "rt"])
