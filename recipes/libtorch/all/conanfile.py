@@ -275,7 +275,6 @@ class LibtorchConan(ConanFile):
         self.requires("foxi/cci.20210217", libs=False)
         self.requires("onnx/1.17.0", transitive_headers=True, transitive_libs=True)
         self.requires("protobuf/3.21.12")
-        self.requires("fp16/cci.20210320")
         self.requires("cpp-httplib/0.18.0")
         self.requires("libbacktrace/cci.20240730")
         if self._depends_on_sleef:
@@ -297,6 +296,7 @@ class LibtorchConan(ConanFile):
             self.requires("fxdiv/cci.20200417")
             self.requires("psimd/cci.20200517")
         if self.options.get_safe("with_xnnpack", False):
+            self.requires("fp16/cci.20210320")
             self.requires("xnnpack/cci.20240229")
         if self.options.with_itt:
             self.requires("ittapi/3.24.4")
