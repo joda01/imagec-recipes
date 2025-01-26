@@ -271,6 +271,7 @@ class LibtorchConan(ConanFile):
         self.requires("cpuinfo/cci.20231129")
         self.requires("eigen/3.4.0")
         # fmt/11.x is not yet supported as of v2.4.0
+        self.requires("fp16/cci.20210320")
         self.requires("fmt/10.2.1", transitive_headers=True, transitive_libs=True)
         self.requires("foxi/cci.20210217", libs=False)
         self.requires("onnx/1.17.0", transitive_headers=True, transitive_libs=True)
@@ -296,7 +297,6 @@ class LibtorchConan(ConanFile):
             self.requires("fxdiv/cci.20200417")
             self.requires("psimd/cci.20200517")
         if self.options.get_safe("with_xnnpack", False):
-            self.requires("fp16/cci.20210320")
             self.requires("xnnpack/cci.20240229")
         if self.options.with_itt:
             self.requires("ittapi/3.24.4")
@@ -629,6 +629,9 @@ class LibtorchConan(ConanFile):
         def _itt():
             return ["ittapi::ittapi"] if self.options.with_itt else []
 
+        def _fp16():
+            return ["fp16::fp16"] if self.options.get_safe("with_qnnpack",False) == False else []
+
         self.cpp_info.set_property("cmake_file_name", "Torch")
 
         # Export official CMake variables
@@ -666,7 +669,7 @@ class LibtorchConan(ConanFile):
         self.cpp_info.components["torch_cpu_link_order_workaround"].requires.extend(
             ["_headers", "c10", "eigen::eigen", "fmt::fmt", "foxi::foxi"] +
             _fbgemm() + _sleef() + _onednn() + _protobuf() + _fbgemm() + _kineto() + _openblas() + _lapack() +
-            _vulkan() + _opencl() + _openmp() + _nnpack() + _xnnpack() + _qnnpack() + _itt()
+            _vulkan() + _opencl() + _openmp() + _nnpack() + _xnnpack() + _qnnpack() + _itt() + _fp16()
         )
         if self.settings.os == "Linux":
             self.cpp_info.components["torch_cpu_link_order_workaround"].system_libs.extend(["dl", "m", "pthread", "rt"])
@@ -696,7 +699,7 @@ class LibtorchConan(ConanFile):
             _add_whole_archive_lib("caffe2_observers", "caffe2_observers", shared=self.options.shared)
             self.cpp_info.components["caffe2_observers"].requires.append("torch")
 
-        if self.options.get_safe("with_qnnpack"):
+        if self.options.get_safe("with_qnnpack",False):
             self.cpp_info.components["clog"].libs = ["clog"]
             self.cpp_info.components["pytorch_qnnpack"].libs = ["pytorch_qnnpack"]
             self.cpp_info.components["pytorch_qnnpack"].requires.extend([
