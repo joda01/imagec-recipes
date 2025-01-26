@@ -526,7 +526,7 @@ class LibtorchConan(ConanFile):
             self._regenerate_flatbuffers()
         cmake = CMake(self)
         if self.is_windows:
-            cmake.configure(args=[f"-DPYTHON_EXECUTABLE={tools.which('python')}"])
+            cmake.configure(args=[f"-DPYTHON_EXECUTABLE={which('python')}"])
         else:
             cmake.configure()
 
