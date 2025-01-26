@@ -10,6 +10,7 @@ from conan.tools.env import VirtualBuildEnv, Environment
 from conan.tools.files import apply_conandata_patches, copy, export_conandata_patches, get, rm, rmdir, save
 from conan.tools.microsoft import is_msvc, is_msvc_static_runtime
 from conan.tools.scm import Version
+from conan.tools.system import which
 
 required_conan_version = ">=1.60.0 <2 || >=2.0.6"
 
@@ -597,7 +598,7 @@ class LibtorchConan(ConanFile):
             return ["xnnpack::xnnpack"] if self.options.get_safe("with_xnnpack", False) else []
 
         def _qnnpack():
-            return ["pytorch_qnnpack"] if self.options.get_safe("with_qnnpack") else []
+            return ["pytorch_qnnpack"] if self.options.get_safe("with_qnnpack", False) else []
 
         def _libnuma():
             return ["libnuma::libnuma"] if self.options.get_safe("with_numa") else []
