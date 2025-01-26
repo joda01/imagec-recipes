@@ -433,7 +433,7 @@ class LibtorchConan(ConanFile):
         tc.variables["USE_VULKAN"] = self.options.with_vulkan
         tc.variables["USE_VULKAN_FP16_INFERENCE"] = self.options.get_safe("vulkan_fp16_inference", False)
         tc.variables["USE_VULKAN_RELAXED_PRECISION"] = self.options.get_safe("vulkan_relaxed_precision", False)
-        tc.variables["USE_XNNPACK"] = self.options.with_xnnpack
+        tc.variables["USE_XNNPACK"] = self.options.get_safe("with_xnnpack", False)
         tc.variables["USE_ITT"] = self.options.with_itt
         tc.variables["USE_MKLDNN"] = self.options.get_safe("with_mkldnn", False)
         tc.variables["USE_MKLDNN_CBLAS"] = False  # This option is useless for libtorch
@@ -570,7 +570,7 @@ class LibtorchConan(ConanFile):
             return []  # TODO
 
         def _xnnpack():
-            return ["xnnpack::xnnpack"] if self.options.with_xnnpack else []
+            return ["xnnpack::xnnpack"] if self.options.get_safe("with_xnnpack", False) else []
 
         def _qnnpack():
             return ["pytorch_qnnpack"] if self.options.get_safe("with_qnnpack") else []
