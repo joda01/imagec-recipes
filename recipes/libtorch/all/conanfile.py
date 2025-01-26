@@ -177,7 +177,9 @@ class LibtorchConan(ConanFile):
         if is_apple_os(self):
             self.is_mac_os = True
             # Apple does not support NN packages
-            self.options.with_qnnpack = False
+            del self.options.with_qnnpack
+            del self.options.with_nnpack
+            del self.options.with_xnnpack
         if self.settings.os == "Windows":
             del self.options.fPIC
             del self.options.with_qnnpack
@@ -202,7 +204,7 @@ class LibtorchConan(ConanFile):
             # armv8 is not yet supported
             self.options.with_fbgemm = False
         if not is_apple_os(self) or self.settings.os not in ["Linux", "Android"]:
-            del self.options.with_nnpack
+            self.options.rm_safe("with_nnpack")
         # J.D There is an option to enable or disable it, this should not be overidden
         #self.options.with_itt = self.settings.arch in ["x86", "x86_64"]
 
