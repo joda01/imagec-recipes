@@ -674,6 +674,11 @@ class LibtorchConan(ConanFile):
             self.cpp_info.components["pytorch_qnnpack"].requires.extend([
                 "clog", "cpuinfo::cpuinfo", "fp16::fp16", "fxdiv::fxdiv", "psimd::psimd", "pthreadpool::pthreadpool"
             ])
+        elif is_apple_os(self):
+            # J.D. MacOS needs fp16 event with_qnnpack is FALSE
+            self.cpp_info.components["pytorch_qnnpack"].requires.extend([
+                "fp16::fp16"
+            ])
 
         if self.options.with_kineto:
             self.cpp_info.components["kineto"].libs = ["kineto"]
