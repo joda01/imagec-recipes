@@ -479,7 +479,7 @@ class LibtorchConan(ConanFile):
         tc.variables["CONAN_LIBTORCH_USE_SLEEF"] = self._depends_on_sleef
 
         if self.is_windows:
-            tc.variables["PYTHON_EXECUTABLE"]=shutil.which('python')
+            tc.variables["PYTHON_EXECUTABLE"]=shutil.which('python').replace('\\', '/')
         
         tc.generate()
 
