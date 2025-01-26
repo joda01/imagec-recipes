@@ -13,3 +13,5 @@ conan install . --profile profiles/profile_linux --output-folder=build --build=m
 conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
 conan graph info . -r=imageclibs --format=html > graph.html
 ```
+
+git diff --no-index Utils_a.cc Utils.cc > utils.patch
