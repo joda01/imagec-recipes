@@ -436,6 +436,8 @@ class LibtorchConan(ConanFile):
         tc.variables["USE_VULKAN_FP16_INFERENCE"] = self.options.get_safe("vulkan_fp16_inference", False)
         tc.variables["USE_VULKAN_RELAXED_PRECISION"] = self.options.get_safe("vulkan_relaxed_precision", False)
         tc.variables["USE_XNNPACK"] = self.options.get_safe("with_xnnpack", False)
+        if self.options.get_safe("with_xnnpack", False) == False:
+            tc.variables["USE_SYSTEM_XNNPACK"] = False
         tc.variables["USE_ITT"] = self.options.with_itt
         tc.variables["USE_MKLDNN"] = self.options.get_safe("with_mkldnn", False)
         tc.variables["USE_MKLDNN_CBLAS"] = False  # This option is useless for libtorch
@@ -510,7 +512,7 @@ class LibtorchConan(ConanFile):
             cmake.configure(args=[f"-DPYTHON_EXECUTABLE={tools.which('python')}"])
         else:
             cmake.configure()
-            
+
         try:
             cmake.build()
         except Exception:
