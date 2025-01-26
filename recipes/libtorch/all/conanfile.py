@@ -150,6 +150,7 @@ class LibtorchConan(ConanFile):
     no_copy_source = True
     provides = ["miniz", "pocketfft", "kineto", "nnpack", "qnnpack", "opentelemetry-cpp"]
     is_mac_os = False
+    is_windows = False
 
     @property
     def _min_cppstd(self):
@@ -181,6 +182,7 @@ class LibtorchConan(ConanFile):
             del self.options.with_nnpack
             del self.options.with_xnnpack
         if self.settings.os == "Windows":
+            self.is_windows = True
             del self.options.fPIC
             del self.options.with_qnnpack
         if not is_apple_os(self):
@@ -504,7 +506,11 @@ class LibtorchConan(ConanFile):
         if self._depends_on_flatbuffers:
             self._regenerate_flatbuffers()
         cmake = CMake(self)
-        cmake.configure()
+        if self.is_windows:
+            cmake.configure(args=[f"-DPYTHON_EXECUTABLE={tools.which('python')}"])
+        else:
+            cmake.configure()
+            
         try:
             cmake.build()
         except Exception:
