@@ -201,6 +201,11 @@ class LibtorchConan(ConanFile):
             self.options.with_fbgemm = False
         if not is_apple_os(self) or self.settings.os not in ["Linux", "Android"]:
             del self.options.with_nnpack
+        if is_apple_os(self):
+            # Apple does not support NN packages
+            del self.options.with_nnpack
+            del self.options.with_mkldnn
+            del self.options.with_qnnpack
         # J.D There is an option to enable or disable it, this should not be overidden
         #self.options.with_itt = self.settings.arch in ["x86", "x86_64"]
 
