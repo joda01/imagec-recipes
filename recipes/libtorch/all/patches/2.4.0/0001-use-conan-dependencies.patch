@@ -87,7 +87,7 @@ diff --git a/cmake/Dependencies.cmake b/cmake/Dependencies.cmake
 index c4661e39e1..b17edad046 100644
 --- a/cmake/Dependencies.cmake
 +++ b/cmake/Dependencies.cmake
-@@ -860,7 +860,7 @@ else()
+@@ -860,11 +860,12 @@ else()
  endif()
  
  if(NOT Python_Interpreter_FOUND)
@@ -96,9 +96,14 @@ index c4661e39e1..b17edad046 100644
  endif()
  
  if(${Python_VERSION} VERSION_LESS 3.8)
+-  message(FATAL_ERROR
++  set(Python_VERSION 3.10.11)
++  message(WARNING
+     "Found Python libraries version ${Python_VERSION}. Python < 3.8 is no longer supported by PyTorch.")
+ endif()
 
 
-@@ -1306,22 +1306,10 @@ if(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO AND NOT INTERN_DISABLE_ONNX)
+@@ -1306,22 +1307,10 @@ if(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO AND NOT INTERN_DISABLE_ONNX)
        target_compile_options(onnx PRIVATE -Wno-deprecated-declarations)
      endif()
    else()
