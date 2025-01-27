@@ -28,7 +28,8 @@ class ImageC(ConanFile):
         self.requires("tensorflow-lite/2.15.0")
         self.requires("xnnpack/cci.20240229", override = True)
         self.requires("protobuf/3.21.12", override=True)
-        self.requires("flatbuffers/24.3.25", override=True)
+        #self.requires("flatbuffers/24.3.25", override=True)
+        self.requires("flatbuffers/23.5.26", override = True)
         #self.requires("xkbcommon/1.6.0", override=True)
         #self.requires("libpq/15.5", override=True)
         # Libtorch deps
