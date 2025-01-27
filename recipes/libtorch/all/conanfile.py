@@ -312,7 +312,7 @@ class LibtorchConan(ConanFile):
             self.requires("vulkan-loader/1.3.290.0")
         if self.options.with_mimalloc:
             self.requires("mimalloc/2.1.7")
-        if is_apple_os(self):
+        if is_apple_os(self) or self.is_windows = True:
             self.requires("pybind11/2.13.6")
             #self.requires("opentelemetry-cpp/1.17.0")
 
@@ -635,7 +635,7 @@ class LibtorchConan(ConanFile):
             return ["fp16::fp16"] if self.options.get_safe("with_qnnpack",False) == False else []
 
         def _pybind():
-            return ["pybind11::pybind11"] if self.is_mac_os == True else []
+            return ["pybind11::pybind11"] if self.is_mac_os == True or self.is_windows = True else []
         
         self.cpp_info.set_property("cmake_file_name", "Torch")
 
