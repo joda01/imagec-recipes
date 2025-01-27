@@ -480,7 +480,9 @@ class LibtorchConan(ConanFile):
 
         if self.is_windows:
             tc.variables["PYTHON_EXECUTABLE"]=shutil.which('python').replace('\\', '/')
-        
+            tc.variables["Python3_EXECUTABLE"]=shutil.which('python').replace('\\', '/')
+            tc.variables["Python_EXECUTABLE"]=shutil.which('python').replace('\\', '/')
+
         tc.generate()
 
         deps = CMakeDeps(self)
