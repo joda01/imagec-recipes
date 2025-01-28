@@ -186,6 +186,7 @@ class LibtorchConan(ConanFile):
             del self.options.with_xnnpack
         if self.settings.os == "Windows":
             self.is_windows = True
+            self.options.with_mimalloc = True       # J.D. For WIN32 mimalloc is mandatory CMakeLists Line 389
             del self.options.fPIC
             del self.options.with_qnnpack
         if not is_apple_os(self):
