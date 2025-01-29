@@ -21,4 +21,3 @@ patches:
       base_path: "third_party/kineto"
       patch_type: "conan"
     - patch file: "patches/2.4.0/0006-posix-mingw.patch"
-      patch_type: "mingw"
