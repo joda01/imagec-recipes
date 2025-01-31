@@ -53,7 +53,6 @@ jobs:
 
       - name: Add openblas 0.3.28
         run: |
-          cd recipes/openblas/all
           sudo conan export -r=imageclibs --version=0.3.28 recipes/openblas/all
           sudo conan upload openblas/0.3.28 -r=imageclibs
 
