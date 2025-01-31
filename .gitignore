@@ -1,1 +1,5 @@
 build
+pkglist.json
+graph.html
+build.json
+recipes/libtorch/all/test_package/CMakeUserPresets.json

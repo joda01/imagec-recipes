@@ -1,6 +1,7 @@
 [settings]
 os=Windows
 compiler=gcc
+compiler.cppstd=17
 compiler.version=12
 compiler.libcxx=libstdc++11
 compiler.threads=posix
@@ -10,8 +11,10 @@ build_type=Release
 
 [tool_requires]
 mingw-builds/13.2.0
+cpython/3.12.7
 
 [options]
+cpython/*:shared=True
 qt/*:qtsvg=True
 qt/*:qtcharts=True
 qt/*:with_pq=False
@@ -30,3 +33,5 @@ opencv/*:with_imgcodec_hdr=False
 opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
+
+

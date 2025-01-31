@@ -1,0 +1,13 @@
+diff --git a/tensorflow/lite/tools/benchmark/CMakeLists.txt b/tensorflow/lite/tools/benchmark/CMakeLists.txt
+index 477254a..e8e6302 100644
+--- a/tensorflow/lite/tools/benchmark/CMakeLists.txt
++++ b/tensorflow/lite/tools/benchmark/CMakeLists.txt
+@@ -51,7 +51,7 @@ list(APPEND TFLITE_BENCHMARK_LIBS
+   feature_proto
+   example_proto
+   model_runtime_info_proto
+-  protobuf::libprotobuf
++  protobuf
+ )
+ 
+ # TODO(b/171007016): Enable performance options on Windows.

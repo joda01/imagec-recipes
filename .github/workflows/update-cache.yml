@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - libtorch
+      - tensorflow
     tags:
       - '*'
   pull_request:
@@ -31,20 +33,61 @@ jobs:
           sudo apt-get install -y libva-dev libvdpau-dev xkb-data
           sudo pip install conan
           sudo chmod 777 -R /root
+          sudo conan remote update conancenter --url="https://center2.conan.io"
           sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
           sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
-          if [[ -f "/Users/runner/.conan2/profiles/default" ]]; then
+          if [[ -f "/root/.conan2/profiles/default" ]]; then
             echo "Loaded from cache"
           else
-            sudo conan profile detect
+            sudo conan profile detect 
+            sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
 
+      - name: Patch cpython 3.12.7
+        run: |
+          sudo conan export -r=imageclibs --version=3.12.7 recipes/cpython/all
+          sudo conan upload cpython/3.12.7 -r=imageclibs
       - name: Apply onnx patche
         run: |
           cd recipes/onnx/all
           sudo conan create . --version=1.17.0
           sudo conan upload onnx/1.17.0 -r=imageclibs
 
+      - name: Add openblas 0.3.28
+        run: |
+          cd recipes/openblas/all
+          sudo conan export -r=imageclibs --version=0.3.28 recipes/openblas/all
+          sudo conan upload openblas/0.3.28 -r=imageclibs
+
+      - name: Add openmp system
+        run: |
+          sudo conan export -r=imageclibs --version=openmp/system recipes/openmp/all
+          sudo conan upload openmp/system -r=imageclibs
+
+      - name: Add fbgemm 0.8.0
+        run: |
+          sudo conan export -r=imageclibs --version=0.8.0 recipes/fbgemm/all
+          sudo conan upload fbgemm/0.8.0 -r=imageclibs
+
+      - name: Add sleef 3.6.1
+        run: |
+          sudo conan export -r=imageclibs --version=3.6.1 recipes/sleef/all
+          sudo conan upload sleef/3.6.1 -r=imageclibs
+      
+      - name: Add gemmlowp
+        run: |
+          sudo conan export -r=imageclibs --version=cci.20210928 recipes/gemmlowp/all
+          sudo conan upload gemmlowp/cci.20210928 -r=imageclibs
+
+      - name: Add lib torch
+        run: |
+          sudo conan export -r=imageclibs --version=2.4.0 recipes/libtorch/all
+          sudo conan upload libtorch/2.4.0 -r=imageclibs
+
+      - name: Add tensorflow
+        run: |
+          sudo conan export -r=imageclibs --version=2.18.0 recipes/tensorflow-lite/all
+          sudo conan upload tensorflow-lite/2.18.0 -r=imageclibs
 
   build-linux-cache:
     needs:
@@ -69,7 +112,7 @@ jobs:
           sudo chmod 777 -R /root
           sudo conan remote remove conancenter
           sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
-          sudo conan remote add conancenter https://center.conan.io
+          sudo conan remote add conancenter https://center2.conan.io
           sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
@@ -80,6 +123,7 @@ jobs:
             echo "Loaded from cache"
           else
             sudo conan profile detect
+            sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
           sudo cat /root/.conan2/profiles/default
           sudo chmod 777 -R /root/.conan2
@@ -108,7 +152,7 @@ jobs:
           pip install conan
           conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
-          conan remote add conancenter https://center.conan.io
+          conan remote add conancenter https://center2.conan.io
           conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
@@ -117,6 +161,7 @@ jobs:
             echo "Loaded from cache"
           else
             conan profile detect
+            echo -e "[conf]\ntools.system.package_manager:mode=install" >> /Users/runner/.conan2/profiles/default
           fi
           cat /Users/runner/.conan2/profiles/default
           conan install . --profile profiles/profile_macos --output-folder=build --build=missing --format=json > build.json
@@ -144,15 +189,18 @@ jobs:
           pip install conan
           conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
-          conan remote add conancenter https://center.conan.io
+          conan remote add conancenter https://center2.conan.io
           conan remote login imageclibs writer -p "$env:CONAN_IMAGEC_ARTIFACTORY_PW"
 
       - name: Build with Conan    
         run: |
+          echo "C:/hostedtoolcache/windows/Python/3.10.11/x64/python3" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          python --version
           if (Test-Path "C:\Users\runneradmin\.conan2\profiles\default") {
             Write-Host "Loaded from cache!"
           } else {
             conan profile detect
+            Add-Content -Path "C:\Users\runneradmin\.conan2\profiles\default" -Value "[conf]`ntools.system.package_manager:mode=install"
           }
           cat C:\Users\runneradmin\.conan2\profiles\default
           conan install . --profile profiles/profile_win_mingw --output-folder=build --build=missing --format=json > build.json
