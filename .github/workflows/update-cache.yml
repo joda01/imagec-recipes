@@ -203,3 +203,42 @@ jobs:
           conan install . --profile profiles/profile_win_mingw --output-folder=build --build=missing --format=json > build.json
           conan list --graph=build.json --format=json > pkglist.json
           conan upload --list=pkglist.json -r=imageclibs -c
+
+
+  build-windows-cache-msvc:
+    needs:
+      - apply-patches
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Conan
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Conan
+        env:
+          CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}    
+        run: |
+          pip install conan
+          conan remote remove conancenter
+          conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
+          conan remote add conancenter https://center2.conan.io
+          conan remote login imageclibs writer -p "$env:CONAN_IMAGEC_ARTIFACTORY_PW"
+
+      - name: Build with Conan    
+        run: |
+          echo "C:/hostedtoolcache/windows/Python/3.10.11/x64/python3" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          python --version
+          if (Test-Path "C:\Users\runneradmin\.conan2\profiles\default") {
+            Write-Host "Loaded from cache!"
+          } else {
+            conan profile detect
+            Add-Content -Path "C:\Users\runneradmin\.conan2\profiles\default" -Value "[conf]`ntools.system.package_manager:mode=install"
+          }
+          cat C:\Users\runneradmin\.conan2\profiles\default
+          conan install . --profile profiles/profile_win_msvc --output-folder=build --build=missing --format=json > build.json
+          conan list --graph=build.json --format=json > pkglist.json
+          conan upload --list=pkglist.json -r=imageclibs -c
