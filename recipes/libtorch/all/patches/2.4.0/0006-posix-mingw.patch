@@ -1,0 +1,44 @@
+diff --git a/c10/core/impl/alloc_cpu.cpp b/c10/core/impl/alloc_cpu.cpp
+index b252f28a751de..65182abe32a8d 100644
+--- a/c10/core/impl/alloc_cpu.cpp
++++ b/c10/core/impl/alloc_cpu.cpp
+@@ -101,7 +101,7 @@ void* alloc_cpu(size_t nbytes) {
+       "DefaultCPUAllocator: not enough memory: you tried to allocate ",
+       nbytes,
+       " bytes.");
+-#elif defined(_MSC_VER)
++#elif defined(_WIN32)
+ #ifdef USE_MIMALLOC
+   data = mi_malloc_aligned(nbytes, gAlignment);
+ #else
+@@ -151,7 +151,7 @@ void* alloc_cpu(size_t nbytes) {
+ }
+ 
+ void free_cpu(void* data) {
+-#ifdef _MSC_VER
++#ifdef _WIN32
+ #ifdef USE_MIMALLOC
+   mi_free(data);
+ #else
+diff --git a/caffe2/utils/threadpool/WorkersPool.h b/caffe2/utils/threadpool/WorkersPool.h
+index 5de6b1213e843..abae04c0cfc1a 100644
+--- a/caffe2/utils/threadpool/WorkersPool.h
++++ b/caffe2/utils/threadpool/WorkersPool.h
+@@ -36,7 +36,7 @@ struct AllocAligned {
+ 
+ #if defined(__ANDROID__)
+     p = memalign(kGEMMLOWPCacheLineSize, sizeof(T));
+-#elif defined(_MSC_VER)
++#elif defined(_WIN32)
+     p = _aligned_malloc(sizeof(T), kGEMMLOWPCacheLineSize);
+ #else
+     auto res = posix_memalign((void**)&p, kGEMMLOWPCacheLineSize, sizeof(T));
+@@ -54,7 +54,7 @@ struct AllocAligned {
+   static void release(T* p) {
+     if (p) {
+       p->~T();
+-#if defined(_MSC_VER)
++#if defined(_WIN32)
+       _aligned_free((void*)p);
+ #else
+       free((void*)p);

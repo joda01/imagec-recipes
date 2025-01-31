@@ -23,6 +23,8 @@ class ImageC(ConanFile):
         self.requires("duckdb/1.1.0")
         self.requires("onnx/1.17.0")
         self.requires("tensorflow-lite/2.18.0")
+        if self.settings.os != "Windows":
+            self.requires("libtorch/2.4.0")
         self.requires("protobuf/3.21.12", override=True)
         self.requires("xkbcommon/1.6.0", override=True)
         self.requires("libpq/15.5", override=True)

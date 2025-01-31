@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - libtorch
-      - tensorflow
     tags:
       - '*'
   pull_request:
@@ -47,10 +45,10 @@ jobs:
         run: |
           sudo conan export -r=imageclibs --version=3.12.7 recipes/cpython/all
           sudo conan upload cpython/3.12.7 -r=imageclibs
+
       - name: Apply onnx patche
         run: |
-          cd recipes/onnx/all
-          sudo conan create . --version=1.17.0
+          sudo conan export -r=imageclibs --version=1.17.0 recipes/onnx/all
           sudo conan upload onnx/1.17.0 -r=imageclibs
 
       - name: Add openblas 0.3.28

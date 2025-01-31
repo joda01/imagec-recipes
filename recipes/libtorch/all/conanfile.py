@@ -186,6 +186,7 @@ class LibtorchConan(ConanFile):
             del self.options.with_xnnpack
         if self.settings.os == "Windows":
             self.is_windows = True
+            self.options.with_mimalloc = True       # J.D. For WIN32 mimalloc is mandatory CMakeLists Line 389
             del self.options.fPIC
             del self.options.with_qnnpack
         if not is_apple_os(self):
@@ -277,7 +278,10 @@ class LibtorchConan(ConanFile):
         self.requires("onnx/1.17.0", transitive_headers=True, transitive_libs=True)
         self.requires("protobuf/3.21.12")
         self.requires("cpp-httplib/0.18.0")
-        self.requires("libbacktrace/cci.20240730")
+        if self.is_windows == False:
+            # There is a problem compiling Pytorch with backtrace support under mingw
+            # pytorch-v2.4.0/c10/util/Backtrace.cpp -> #include <execinfo.h> is Linux specifc
+            self.requires("libbacktrace/cci.20240730")s
         if self._depends_on_sleef:
             self.requires("sleef/3.6.1")
         if self._depends_on_flatbuffers:
