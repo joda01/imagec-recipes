@@ -58,7 +58,7 @@ jobs:
 
       - name: Add openmp system
         run: |
-          sudo conan export -r=imageclibs --version=openmp/system recipes/openmp/all
+          sudo conan export -r=imageclibs --version=system recipes/openmp/all
           sudo conan upload openmp/system -r=imageclibs
 
       - name: Add fbgemm 0.8.0
