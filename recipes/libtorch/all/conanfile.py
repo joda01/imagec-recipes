@@ -281,7 +281,7 @@ class LibtorchConan(ConanFile):
         if self.is_windows == False:
             # There is a problem compiling Pytorch with backtrace support under mingw
             # pytorch-v2.4.0/c10/util/Backtrace.cpp -> #include <execinfo.h> is Linux specifc
-            self.requires("libbacktrace/cci.20240730")s
+            self.requires("libbacktrace/cci.20240730")
         if self._depends_on_sleef:
             self.requires("sleef/3.6.1")
         if self._depends_on_flatbuffers:
