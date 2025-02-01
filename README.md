@@ -14,4 +14,4 @@ conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imagec
 conan graph info . -r=imageclibs --format=html > graph.html
 ```
 
-git diff --no-index CMakeLists.txt Utils.cc > utils.patch
+git diff --no-index a.hpp b.hpp > utils.patch

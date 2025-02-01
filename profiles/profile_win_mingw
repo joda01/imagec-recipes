@@ -33,4 +33,6 @@ opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
 
+[buildenv]
+CXXFLAGS = -DC4_MINGW
 

@@ -86,6 +86,11 @@ jobs:
           sudo conan export -r=imageclibs --version=2.18.0 recipes/tensorflow-lite/all
           sudo conan upload tensorflow-lite/2.18.0 -r=imageclibs
 
+      - name: Add rapidyaml
+        run: |
+          sudo conan export -r=imageclibs --version=0.7.1 recipes/rapidyaml/all
+          sudo conan upload rapidyaml/0.7.1 -r=imageclibs
+
   build-linux-cache:
     needs:
       - apply-patches
