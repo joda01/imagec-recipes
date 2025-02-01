@@ -22,6 +22,7 @@ class ImageC(ConanFile):
         self.requires("libxlsxwriter/1.1.8")
         self.requires("duckdb/1.1.0")
         self.requires("onnx/1.17.0")
+        self.requires("rapidyaml/0.7.1")
         self.requires("tensorflow-lite/2.18.0")
         if self.settings.os != "Windows":
             self.requires("libtorch/2.4.0")
