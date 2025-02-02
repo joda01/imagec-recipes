@@ -35,6 +35,7 @@ class ImageC(ConanFile):
         self.requires("abseil/20240116.1", override=True)
         self.requires("libbacktrace/cci.20240730", override = True)
         self.requires("xnnpack/cci.20240229", override = True)
+        self.requires("boost/1.86.0", override = True)
 
 
 

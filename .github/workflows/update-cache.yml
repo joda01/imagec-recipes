@@ -91,6 +91,11 @@ jobs:
           sudo conan export -r=imageclibs --version=0.7.1 recipes/rapidyaml/all
           sudo conan upload rapidyaml/0.7.1 -r=imageclibs
 
+      - name: Add boost
+        run: |
+          sudo conan export -r=imageclibs --version=1.86.0 recipes/boost/all
+          sudo conan upload boost/1.86.0 -r=imageclibs
+
   build-linux-cache:
     needs:
       - apply-patches
