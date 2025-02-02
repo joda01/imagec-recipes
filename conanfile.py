@@ -21,7 +21,7 @@ class ImageC(ConanFile):
         self.requires("nlohmann_json/3.11.3")
         self.requires("libxlsxwriter/1.1.8")
         self.requires("duckdb/1.1.0")
-        self.requires("onnx/1.17.0")
+        self.requires("onnx/1.17.0", override=True)
         self.requires("rapidyaml/0.7.1")
         self.requires("tensorflow-lite/2.18.0")
         self.requires("onnxruntime/1.18.1")
