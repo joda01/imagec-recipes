@@ -31,7 +31,7 @@ class ImageC(ConanFile):
         self.requires("xkbcommon/1.6.0", override=True)
         self.requires("libpq/15.5", override=True)
         self.requires("abseil/20240116.1", override=True)
-        self.requires("flatbuffers/24.3.25", override = True)
+        self.requires("flatbuffers/23.5.26", override = True)
         self.requires("libbacktrace/cci.20240730", override = True)
 
 
