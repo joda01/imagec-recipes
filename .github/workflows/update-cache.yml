@@ -234,6 +234,7 @@ jobs:
           CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}    
         run: |
           pip install conan
+          pip install numpy
           conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
           conan remote add conancenter https://center2.conan.io
