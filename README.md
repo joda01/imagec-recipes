@@ -15,3 +15,5 @@ conan graph info . -r=imageclibs --format=html > graph.html
 ```
 
 git diff --no-index a.hpp b.hpp > utils.patch
+
+conan graph info ... --format=html > graph.html

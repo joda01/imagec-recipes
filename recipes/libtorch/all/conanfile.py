@@ -285,7 +285,7 @@ class LibtorchConan(ConanFile):
         if self._depends_on_sleef:
             self.requires("sleef/3.6.1")
         if self._depends_on_flatbuffers:
-            self.requires("flatbuffers/24.3.25", libs=False)
+            self.requires("flatbuffers/23.5.26", libs=False) # 24.3.25
         if self.options.blas == "openblas":
             # Also provides LAPACK, currently
             self.requires("openblas/0.3.28")

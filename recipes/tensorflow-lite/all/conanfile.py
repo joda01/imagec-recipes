@@ -86,7 +86,7 @@ class TensorflowLiteConan(ConanFile):
         elif Version(self.version) < "2.17.0":
             self.requires("flatbuffers/23.5.26", transitive_headers=True)
         else:
-            self.requires("flatbuffers/24.3.25", transitive_headers=True)
+            self.requires("flatbuffers/24.3.25", transitive_headers=True) # Needed for tensorflow 2.18
         self.requires("gemmlowp/cci.20210928")
         self.requires("ruy/cci.20231129")
         if self.settings.arch in ("x86", "x86_64"):
