@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - msvc
     tags:
       - '*'
   pull_request:
