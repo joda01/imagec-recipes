@@ -79,7 +79,7 @@ jobs:
           sudo conan upload sleef/3.6.1 -r=imageclibs
       
       - name: Add gemmlowp
-        if: false
+        if: true
         run: |
           sudo conan export -r=imageclibs --version=cci.20210928 recipes/gemmlowp/all
           sudo conan upload gemmlowp/cci.20210928 -r=imageclibs
