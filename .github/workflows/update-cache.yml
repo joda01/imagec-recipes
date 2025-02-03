@@ -67,7 +67,7 @@ jobs:
           sudo conan upload openmp/system -r=imageclibs
 
       - name: Add fbgemm 0.8.0
-        if: false
+        if: true
         run: |
           sudo conan export -r=imageclibs --version=0.8.0 recipes/fbgemm/all
           sudo conan upload fbgemm/0.8.0 -r=imageclibs

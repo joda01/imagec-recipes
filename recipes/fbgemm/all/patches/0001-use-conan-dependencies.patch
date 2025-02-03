@@ -1,14 +1,5 @@
-From 56c5b860a6c34cf229b30a9f86098695d98e32f1 Mon Sep 17 00:00:00 2001
-From: Martin Valgur <martin.valgur@gmail.com>
-Date: Sun, 28 Jul 2024 21:23:42 +0300
-Subject: [PATCH 1/2] use conan dependencies
-
----
- CMakeLists.txt | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
-
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 35f0a967..b258c442 100644
+index 3f8fd26..5f50e4c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -246,7 +246,7 @@ message(WARNING "CMAKE_CXX_FLAGS_DEBUG is ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -43,6 +34,11 @@ index 35f0a967..b258c442 100644
  if(OpenMP_FOUND)
    target_link_libraries(fbgemm OpenMP::OpenMP_CXX)
  endif()
--- 
-2.43.0
-
+@@ -397,7 +390,6 @@ if(MSVC)
+       DESTINATION ${CMAKE_INSTALL_LIBDIR} OPTIONAL)
+   endif()
+   install(TARGETS fbgemm DESTINATION ${CMAKE_INSTALL_LIBDIR})
+-  install(TARGETS asmjit DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ endif()
+ 
+ #Make project importable from the build directory
