@@ -42,56 +42,67 @@ jobs:
           fi
 
       - name: Patch cpython 3.12.7
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=3.12.7 recipes/cpython/all
           sudo conan upload cpython/3.12.7 -r=imageclibs
 
       - name: Apply onnx patche
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=1.17.0 recipes/onnx/all
           sudo conan upload onnx/1.17.0 -r=imageclibs
 
       - name: Add openblas 0.3.28
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=0.3.28 recipes/openblas/all
           sudo conan upload openblas/0.3.28 -r=imageclibs
 
       - name: Add openmp system
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=system recipes/openmp/all
           sudo conan upload openmp/system -r=imageclibs
 
       - name: Add fbgemm 0.8.0
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=0.8.0 recipes/fbgemm/all
           sudo conan upload fbgemm/0.8.0 -r=imageclibs
 
       - name: Add sleef 3.6.1
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=3.6.1 recipes/sleef/all
           sudo conan upload sleef/3.6.1 -r=imageclibs
       
       - name: Add gemmlowp
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=cci.20210928 recipes/gemmlowp/all
           sudo conan upload gemmlowp/cci.20210928 -r=imageclibs
 
       - name: Add lib torch
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=2.4.0 recipes/libtorch/all
           sudo conan upload libtorch/2.4.0 -r=imageclibs
 
       - name: Add tensorflow
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=2.18.0 recipes/tensorflow-lite/all
           sudo conan upload tensorflow-lite/2.18.0 -r=imageclibs
 
       - name: Add rapidyaml
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=0.7.1 recipes/rapidyaml/all
           sudo conan upload rapidyaml/0.7.1 -r=imageclibs
 
       - name: Add boost
+        if: false
         run: |
           sudo conan export -r=imageclibs --version=1.86.0 recipes/boost/all
           sudo conan upload boost/1.86.0 -r=imageclibs
