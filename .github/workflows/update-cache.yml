@@ -111,6 +111,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: ubuntu-22.04
+    if: false
 
     steps:
       - uses: actions/checkout@v4
@@ -154,6 +155,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: macos-14
+    if: false
 
     steps:
       - uses: actions/checkout@v4
@@ -191,6 +193,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: windows-latest
+    if: false
 
     steps:
       - uses: actions/checkout@v4
@@ -231,7 +234,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: windows-latest
-    if: false
+    if: true
 
     steps:
       - uses: actions/checkout@v4
