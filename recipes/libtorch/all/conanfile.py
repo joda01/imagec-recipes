@@ -674,7 +674,7 @@ class LibtorchConan(ConanFile):
         ## (conan generators put exelinkflags/sharedlinkflags after system/external libs)
         self.cpp_info.components["torch_cpu"].requires.append("torch_cpu_link_order_workaround")
         self.cpp_info.components["torch_cpu_link_order_workaround"].requires.extend(
-            ["_headers", "c10", "eigen::eigen", "fmt::fmt", "foxi::foxi"] +
+            ["_headers", "c10", "eigen::eigen", "fmt::fmt", "foxi::foxi","libbacktrace::libbacktrace"] +
             _fbgemm() + _sleef() + _onednn() + _protobuf() + _fbgemm() + _kineto() + _openblas() + _lapack() +
             _vulkan() + _opencl() + _openmp() + _nnpack() + _xnnpack() + _qnnpack() + _itt() + _fp16() + _pybind()
         )
