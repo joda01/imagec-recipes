@@ -85,7 +85,7 @@ jobs:
           sudo conan upload gemmlowp/cci.20210928 -r=imageclibs
 
       - name: Add lib torch
-        if: false
+        if: true
         run: |
           sudo conan export -r=imageclibs --version=2.4.0 recipes/libtorch/all
           sudo conan upload libtorch/2.4.0 -r=imageclibs
