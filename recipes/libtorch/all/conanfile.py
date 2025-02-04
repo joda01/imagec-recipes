@@ -496,11 +496,11 @@ class LibtorchConan(ConanFile):
         deps.set_property("foxi", "cmake_target_name", "foxi_loader")
         deps.set_property("gflags", "cmake_target_name", "gflags")
         deps.set_property("ittapi", "cmake_file_name", "ITT")
-        deps.set_property("cmake_file_name")
         if self.options.with_mimalloc:
             deps.set_property("mimalloc", "cmake_target_name", "mimalloc-static")
         if self.is_windows == False:
-            deps.set_property("libbacktrace","Backtrace")
+            deps.set_property("libbacktrace", "cmake_file_name", "Backtrace")
+
         deps.set_property("psimd", "cmake_target_name", "psimd")
         deps.generate()
 
