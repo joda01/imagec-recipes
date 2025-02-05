@@ -191,6 +191,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: windows-latest
+    if: false
 
     steps:
       - uses: actions/checkout@v4
@@ -231,7 +232,7 @@ jobs:
     needs:
       - apply-patches
     runs-on: windows-latest
-    if: false
+    if: true
 
     steps:
       - uses: actions/checkout@v4

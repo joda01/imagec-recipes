@@ -496,9 +496,11 @@ class LibtorchConan(ConanFile):
         deps.set_property("foxi", "cmake_target_name", "foxi_loader")
         deps.set_property("gflags", "cmake_target_name", "gflags")
         deps.set_property("ittapi", "cmake_file_name", "ITT")
-        deps.set_property("libbacktrace", "cmake_file_name", "Backtrace")
         if self.options.with_mimalloc:
             deps.set_property("mimalloc", "cmake_target_name", "mimalloc-static")
+        if self.is_windows == False:
+            deps.set_property("libbacktrace", "cmake_file_name", "Backtrace")
+
         deps.set_property("psimd", "cmake_target_name", "psimd")
         deps.generate()
 
@@ -623,6 +625,9 @@ class LibtorchConan(ConanFile):
 
         def _mimalloc():
             return ["mimalloc::mimalloc"] if self.options.with_mimalloc else []
+        
+        def _backtrace():
+            return ["libbacktrace::libbacktrace"] if self.is_windows == False else []
 
         def _protobuf():
             return ["protobuf::libprotobuf-lite"] if self.dependencies["protobuf"].options.lite else ["protobuf::libprotobuf"]
@@ -656,8 +661,8 @@ class LibtorchConan(ConanFile):
         self.cpp_info.components["c10"].set_property("cmake_target_name", "c10")
         self.cpp_info.components["c10"].libs = ["c10"]
         self.cpp_info.components["c10"].requires.extend(
-            ["_headers", "fmt::fmt", "cpuinfo::cpuinfo", "libbacktrace::libbacktrace", "cpp-httplib::cpp-httplib"] +
-            _gflags() + _glog() + _libnuma() + _mimalloc()
+            ["_headers", "fmt::fmt", "cpuinfo::cpuinfo", "cpp-httplib::cpp-httplib"] +
+            _backtrace() + _gflags() + _glog() + _libnuma() + _mimalloc()
         )
         if self.settings.os == "Android":
             self.cpp_info.components["c10"].system_libs.append("log")

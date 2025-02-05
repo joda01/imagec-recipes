@@ -25,9 +25,7 @@ class ImageC(ConanFile):
         self.requires("rapidyaml/0.7.1")
         self.requires("tensorflow-lite/2.15.0")
         self.requires("onnxruntime/1.18.1")
-        if self.settings.os != "Windows":
-            self.requires("libtorch/2.4.0")
-            
+        self.requires("libtorch/2.4.0") # Not supported for MinGW    
         self.requires("flatbuffers/23.5.26", override=True)
         self.requires("protobuf/3.21.12", override=True)
         self.requires("xkbcommon/1.6.0", override=True)
