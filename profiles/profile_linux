@@ -24,6 +24,7 @@ harfbuzz/*:fPIC=False
 harfbuzz/*:with_glib=False
 harfbuzz/*:with_freetype=False
 libxlsxwriter/*:md5=False
+onnxruntime/*:with_cuda=True
 opencv/*:with_ffmpeg=False
 opencv/*:video=False
 opencv/*:videoio=False
