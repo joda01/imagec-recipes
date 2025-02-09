@@ -37,13 +37,7 @@ opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
 
 
-[runenv]
-CMAKE_CUDA_COMPILER=/usr/local/cuda-12/bin/nvcc
-CMAKE_CUDA_ARCHITECTURES=native
-GMX_BUILD_OWN_FFTW=ON
-REGRESSIONTEST_DOWNLOAD=ON
-GMX_GPU=CUDA 
-CMAKE_PREFIX_PATH=/usr/local/cuda-12.6 
+
 
 [buildenv]
 CMAKE_CUDA_COMPILER=/usr/local/cuda-12/bin/nvcc
@@ -52,3 +46,4 @@ GMX_BUILD_OWN_FFTW=ON
 REGRESSIONTEST_DOWNLOAD=ON
 GMX_GPU=CUDA 
 CMAKE_PREFIX_PATH=/usr/local/cuda-12.6 
+CMAKE_ARGS=-DLLAMA_CUBLAS=on -DCMAKE_CUDA_ARCHITECTURES=native
