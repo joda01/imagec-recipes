@@ -35,3 +35,7 @@ opencv/*:with_imgcodec_hdr=False
 opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
+
+[buildenv]
+UDACXX=/usr/local/cuda-12/bin/nvcc 
+CMAKE_ARGS="-DLLAMA_CUBLAS=on -DCMAKE_CUDA_ARCHITECTURES=native" 
