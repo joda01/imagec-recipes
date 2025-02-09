@@ -114,6 +114,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: Jimver/cuda-toolkit@v0.2.21
 
       - name: Set up Conan
         uses: actions/setup-python@v4
@@ -195,7 +196,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+      - uses: Jimver/cuda-toolkit@v0.2.21
+      
       - name: Set up Conan
         uses: actions/setup-python@v4
         with:
