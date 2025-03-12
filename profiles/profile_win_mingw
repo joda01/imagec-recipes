@@ -22,6 +22,7 @@ qt/*:with_sqlite3=False
 qt/*:shared=True
 qt/*:with_harfbuzz=False
 libxlsxwriter/*:md5=False
+onnxruntime/*:with_cuda=True
 opencv/*:with_ffmpeg=False
 opencv/*:video=False
 opencv/*:videoio=False

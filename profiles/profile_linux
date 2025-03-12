@@ -10,6 +10,7 @@ os=Linux
 
 [conf]
 tools.system.package_manager:mode=install
+tools.cmake.cmaketoolchain:toolset_cuda=/usr/local/cuda-12/bin
 
 [options]
 qt/*:qtsvg=True
@@ -24,6 +25,7 @@ harfbuzz/*:fPIC=False
 harfbuzz/*:with_glib=False
 harfbuzz/*:with_freetype=False
 libxlsxwriter/*:md5=False
+onnxruntime/*:with_cuda=True
 opencv/*:with_ffmpeg=False
 opencv/*:video=False
 opencv/*:videoio=False
@@ -34,3 +36,14 @@ opencv/*:with_imgcodec_hdr=False
 opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
+
+
+[buildenv]
+CMAKE_CUDA_COMPILER=/usr/local/cuda-12/bin/nvcc
+CMAKE_CUDA_ARCHITECTURES=61
+GMX_BUILD_OWN_FFTW=ON
+REGRESSIONTEST_DOWNLOAD=ON
+GMX_GPU=CUDA 
+CMAKE_PREFIX_PATH=/usr/local/cuda-12.6 
+CUDACXX=/usr/local/cuda-12/bin/nvcc  
+
