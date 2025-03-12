@@ -38,3 +38,7 @@ opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
 
 
+[buildenv]
+CMAKE_CUDA_ARCHITECTURES=61
+onnxruntime_USE_CUDA_NHWC_OPS=ON
+
