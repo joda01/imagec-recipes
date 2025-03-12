@@ -10,6 +10,7 @@ os=Linux
 
 [conf]
 tools.system.package_manager:mode=install
+tools.cmake.cmaketoolchain:toolset_cuda=/usr/local/cuda-12/bin
 
 [options]
 qt/*:qtsvg=True
@@ -35,9 +36,6 @@ opencv/*:with_imgcodec_hdr=False
 opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
-
-
-tools.cmake.cmaketoolchain:extra_cmake_args=["-DCMAKE_CUDA_ARCHITECTURES=61"]
 
 
 [buildenv]
