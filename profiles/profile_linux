@@ -37,6 +37,7 @@ opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
 
 
+tools.cmake.cmaketoolchain:extra_cmake_args=["-DCMAKE_CUDA_ARCHITECTURES=61"]
 
 
 [buildenv]
@@ -48,6 +49,3 @@ GMX_GPU=CUDA
 CMAKE_PREFIX_PATH=/usr/local/cuda-12.6 
 CUDACXX=/usr/local/cuda-12/bin/nvcc  
 
-[cmake]
-# Custom CMake arguments
-args = -DLLAMA_CUBLAS=on -DCMAKE_CUDA_ARCHITECTURES=61
