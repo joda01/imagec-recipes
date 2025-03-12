@@ -39,6 +39,11 @@ opencv/*:with_imgcodec_sunraster=False
 
 
 [buildenv]
+CMAKE_CUDA_COMPILER=/usr/local/cuda-12/bin/nvcc
 CMAKE_CUDA_ARCHITECTURES=61
-onnxruntime_USE_CUDA_NHWC_OPS=ON
+GMX_BUILD_OWN_FFTW=ON
+REGRESSIONTEST_DOWNLOAD=ON
+GMX_GPU=CUDA 
+CMAKE_PREFIX_PATH=/usr/local/cuda-12.6 
+CUDACXX=/usr/local/cuda-12/bin/nvcc  
 
