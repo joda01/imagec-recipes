@@ -35,6 +35,7 @@ opencv/*:with_imgcodec_sunraster=False
 boost/*:without_fiber=True  
 boost/*:without_stacktrace=True  
 boost/*:without_python=True  
+openssl/*:shared=False
 
 [buildenv]
 CXXFLAGS = -DC4_MINGW
