@@ -22,6 +22,7 @@ class ImageC(ConanFile):
         self.requires("libxlsxwriter/1.1.8")
         self.requires("duckdb/1.1.3")
         self.requires("cpp-httplib/0.19.0", force=True)
+        self.requires("openssl/3.4.1", force=True)
         self.requires("onnx/1.17.0", force=True)
         self.requires("rapidyaml/0.7.1")
         self.requires("tensorflow-lite/2.15.0")
