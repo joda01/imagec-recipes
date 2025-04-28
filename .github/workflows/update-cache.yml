@@ -53,6 +53,12 @@ jobs:
           sudo conan export -r=imageclibs --version=1.17.0 recipes/onnx/all
           sudo conan upload onnx/1.17.0 -r=imageclibs
 
+      - name: Apply onnxruntime patche
+        if: false
+        run: |
+          sudo conan export -r=imageclibs --version=1.18.1 recipes/onnxruntime/all
+          sudo conan upload onnx/1.18.1 -r=imageclibs
+
       - name: Add openblas 0.3.28
         if: false
         run: |
