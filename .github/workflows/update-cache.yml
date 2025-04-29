@@ -54,7 +54,7 @@ jobs:
           sudo conan upload onnx/1.17.0 -r=imageclibs
 
       - name: Apply onnxruntime patche
-        if: false
+        if: true
         run: |
           sudo conan export -r=imageclibs --version=1.18.1 recipes/onnxruntime/all
           sudo conan upload onnx/1.18.1 -r=imageclibs
