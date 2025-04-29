@@ -1,5 +1,5 @@
 --- a/include/onnxruntime/core/platform/ort_mutex.h
-+++ a/include/onnxruntime/core/platform/ort_mutex.h
++++ b/include/onnxruntime/core/platform/ort_mutex.h
 @@ -5,6 +5,7 @@
  #ifdef _WIN32
  #include <Windows.h>
