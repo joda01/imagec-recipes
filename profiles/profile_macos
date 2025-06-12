@@ -21,6 +21,7 @@ qt/*:with_odbc=False
 qt/*:with_sqlite3=False
 qt/*:with_harfbuzz=True
 qt/*:qtdatavis3d=True
+qt/*:qtgraphs=True
 onnxruntime/*:fPIC=False
 harfbuzz/*:fPIC=False
 harfbuzz/*:with_glib=False
