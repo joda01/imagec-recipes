@@ -139,7 +139,12 @@ jobs:
           sudo conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
           sudo conan remote add conancenter https://center2.conan.io
           sudo conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
-
+      
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      
       - name: Build with Conan
         env:
           CONAN_IMAGEC_ARTIFACTORY_PW: ${{ secrets.CONAN_IMAGEC_ARTIFACTORY_PW }}
