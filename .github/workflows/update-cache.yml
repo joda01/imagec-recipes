@@ -111,8 +111,8 @@ jobs:
       - name: Add matplotplusplus
         if: false
         run: |
-          sudo conan export -r=imageclibs --version=1.1.0 recipes/matplotplusplus/all
-          sudo conan upload matplotplusplus/1.1.0 -r=imageclibs
+          sudo conan export -r=imageclibs --version=1.2.2 recipes/matplotplusplus/all
+          sudo conan upload matplotplusplus/1.2.2 -r=imageclibs
 
   build-linux-cache:
     needs:

@@ -65,12 +65,12 @@ class MatplotPlusPlusConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        self.requires("cimg/3.0.2")
+        self.requires("cimg/3.3.2")
         self.requires("nodesoup/cci.20200905")
         # FIXME: add gnuplot, it's a mandatory runtime dependency of matplot component
         if self.options.with_opengl:
             self.requires("glad/0.1.36")
-            self.requires("glfw/3.3.8")
+            self.requires("glfw/3.4")
 
     def validate(self):
         if self.info.settings.compiler.get_safe("cppstd"):
@@ -87,18 +87,18 @@ class MatplotPlusPlusConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
-        tc.variables["BUILD_EXAMPLES"] = False
-        tc.variables["BUILD_TESTS"] = False
-        tc.variables["BUILD_INSTALLER"] = True
-        tc.variables["BUILD_PACKAGE"] = False
-        tc.variables["BUILD_WITH_PEDANTIC_WARNINGS"] = False
-        tc.variables["BUILD_WITH_SANITIZERS"] = False
-        tc.variables["BUILD_WITH_EXCEPTIONS"] = False
-        tc.variables["BUILD_HIGH_RESOLUTION_WORLD_MAP"] = self.options.high_resolution_world_map
-        tc.variables["BUILD_FOR_DOCUMENTATION_IMAGES"] = self.options.documentation_images
-        tc.variables["BUILD_EXPERIMENTAL_OPENGL_BACKEND"] = self.options.with_opengl
-        tc.variables["WITH_SYSTEM_CIMG"] = True
-        tc.variables["WITH_SYSTEM_NODESOUP"] = True
+        tc.variables["MATPLOTPP_BUILD_EXAMPLES"] = False
+        tc.variables["MATPLOTPP_BUILD_TESTS"] = False
+        tc.variables["MATPLOTPP_BUILD_INSTALLER"] = True
+        tc.variables["MATPLOTPP_BUILD_PACKAGE"] = False
+        tc.variables["MATPLOTPP_BUILD_WITH_PEDANTIC_WARNINGS"] = False
+        tc.variables["MATPLOTPP_BUILD_WITH_SANITIZERS"] = False
+        tc.variables["MATPLOTPP_BUILD_WITH_EXCEPTIONS"] = False
+        tc.variables["MATPLOTPP_BUILD_HIGH_RESOLUTION_WORLD_MAP"] = self.options.high_resolution_world_map
+        tc.variables["MATPLOTPP_BUILD_FOR_DOCUMENTATION_IMAGES"] = self.options.documentation_images
+        tc.variables["MATPLOTPP_BUILD_EXPERIMENTAL_OPENGL_BACKEND"] = self.options.with_opengl
+        tc.variables["MATPLOTPP_WITH_SYSTEM_CIMG"] = True
+        tc.variables["MATPLOTPP_WITH_SYSTEM_NODESOUP"] = True
         tc.variables["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
         tc.generate()
         deps = CMakeDeps(self)
