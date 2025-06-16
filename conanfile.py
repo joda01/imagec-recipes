@@ -14,7 +14,7 @@ class ImageC(ConanFile):
     exports_sources = "src/*"
     
     def requirements(self):
-        self.requires("qt/6.7.1")
+        self.requires("qt/6.7.1", force=True)
         self.requires("opencv/4.10.0")
         self.requires("catch2/3.7.0")
         self.requires("pugixml/1.14")
