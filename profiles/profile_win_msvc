@@ -23,6 +23,7 @@ qt/*:with_harfbuzz=False
 qt/*:qtdatavis3d=True
 qt/*:qtgraphs=True
 qt/*:qtshadertools=True
+qt/*:qt5compat=True
 libxlsxwriter/*:md5=False
 opencv/*:with_ffmpeg=False
 opencv/*:video=False
