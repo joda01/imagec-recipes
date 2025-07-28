@@ -36,6 +36,7 @@ opencv/*:with_imgcodec_hdr=False
 opencv/*:with_imgcodec_pfm=False
 opencv/*:with_imgcodec_pxm=False
 opencv/*:with_imgcodec_sunraster=False
+opencv/*:ximgproc=True
 boost/*:without_fiber=True  
 boost/*:without_stacktrace=True  
 boost/*:without_python=True  
