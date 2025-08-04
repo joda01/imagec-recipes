@@ -69,8 +69,11 @@ class LibTorchConan(ConanFile):
         copy(self, "*", src=os.path.join(self.build_folder,"libtorch", "bin"), dst=os.path.join(self.package_folder, "bin"), keep_path=True)
 
     def package_info(self):
-        self.cpp_info.libs = ["torch", "c10"]  # Adjust based on actual contents
-        self.cpp_info.includedirs = ["include"]
+        # Assume the shipped cmake config files are in <package_folder>/share/cmake/Torch
+        cmake_dir = os.path.join(self.package_folder, "share", "cmake", "Torch")
+        self.cpp_info.builddirs = [cmake_dir]
+
+        # Also expose libs and include paths
+        self.cpp_info.includedirs = ["include","include/torch/csrc/api/include"]
         self.cpp_info.libdirs = ["lib"]
-        self.cpp_info.bindirs = ["bin"]
 
