@@ -7,7 +7,7 @@
 #cd recipes/sleef/all
 #conan create . --version=3.6.1 --build=missing
 
-cd recipes/matplotplusplus/all
-conan create . --version=1.2.2 --build=missing -c tools.system.package_manager:mode=install
+#cd recipes/matplotplusplus/all
+#conan create . --version=1.2.2 --build=missing -c tools.system.package_manager:mode=install
 
 
