@@ -30,6 +30,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libva-dev libvdpau-dev xkb-data
+          sudo pip install requests
           sudo pip install conan
           sudo chmod 777 -R /root
           sudo conan remote update conancenter --url="https://center2.conan.io"
@@ -133,6 +134,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libva-dev libvdpau-dev xkb-data
+          sudo pip install requests
           sudo pip install conan
           sudo chmod 777 -R /root
           sudo conan remote remove conancenter
