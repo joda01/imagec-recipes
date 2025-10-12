@@ -31,7 +31,7 @@ class ImageC(ConanFile):
         self.requires("cereal/1.3.2")
         self.requires("tensorflow-lite/2.15.0")
         self.requires("onnxruntime/1.18.1")
-        self.requires("libtorch/2.4.0") # Not supported for MinGW    
+        #self.requires("libtorch/2.4.0") 
         self.requires("matplotplusplus/1.2.2")
         self.requires("flatbuffers/23.5.26", override=True)
         self.requires("protobuf/3.21.12", override=True)
