@@ -43,6 +43,12 @@ jobs:
             sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
 
+      - name: Patch mlpack 4.6.2
+        if: true
+        run: |
+          sudo conan export -r=imageclibs --version=4.6.2 recipes/mlpack/all
+          sudo conan upload mlpack/4.6.2 -r=imageclibs
+
       - name: Patch cpython 3.12.7
         if: false
         run: |
@@ -185,7 +191,7 @@ jobs:
           conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
           conan remote add conancenter https://center2.conan.io
-          conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
+          conan remote login imageclibs admin -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
         run: |
