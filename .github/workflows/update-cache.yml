@@ -191,7 +191,7 @@ jobs:
           conan remote remove conancenter
           conan remote add imageclibs https://imagec.org:4431/artifactory/api/conan/imageclibs
           conan remote add conancenter https://center2.conan.io
-          conan remote login imageclibs admin -p $CONAN_IMAGEC_ARTIFACTORY_PW
+          conan remote login imageclibs writer -p $CONAN_IMAGEC_ARTIFACTORY_PW
 
       - name: Build with Conan
         run: |
