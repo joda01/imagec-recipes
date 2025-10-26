@@ -32,7 +32,8 @@ class ImageC(ConanFile):
         self.requires("tensorflow-lite/2.15.0")
         self.requires("onnxruntime/1.18.1")
         self.requires("mlpack/4.4.0")
-        self.requires("llvm-openmp/17.0.6")
+        if not is_msvc(self):
+            self.requires("llvm-openmp/17.0.6")
         #self.requires("libtorch/2.4.0") 
         self.requires("matplotplusplus/1.2.2")
         self.requires("flatbuffers/23.5.26", override=True)
