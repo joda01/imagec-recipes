@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout
+from conan.tools.microsoft import is_msvc
 
 class ImageC(ConanFile):
     name = "ImageC-Libs"
