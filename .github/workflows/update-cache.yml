@@ -163,7 +163,7 @@ jobs:
             sudo conan profile detect
             sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
-          cp profiles/profile_linux /root/.conan2/profiles/default
+          sudo cp profiles/profile_linux /root/.conan2/profiles/default
           sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           sudo cat /root/.conan2/profiles/default
           sudo chmod 777 -R /root/.conan2
@@ -203,6 +203,7 @@ jobs:
             conan profile detect
             echo -e "[conf]\ntools.system.package_manager:mode=install" >> /Users/runner/.conan2/profiles/default
           fi
+          cp profiles/profile_macos /Users/runner/.conan2/profiles/default
           cat /Users/runner/.conan2/profiles/default
           conan install . --profile profiles/profile_macos --output-folder=build --build=missing --format=json > build.json
           conan list --graph=build.json --format=json > pkglist.json
