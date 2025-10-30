@@ -32,7 +32,7 @@ class ImageC(ConanFile):
         self.requires("cereal/1.3.2")
         self.requires("tensorflow-lite/2.15.0")
         self.requires("onnxruntime/1.18.1")
-        self.requires("mlpack/4.4.0")
+        self.requires("mlpack/4.6.2")
         if not is_msvc(self):
             self.requires("llvm-openmp/17.0.6")
         #self.requires("libtorch/2.4.0") 
