@@ -164,7 +164,6 @@ jobs:
             sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           fi
           sudo cp profiles/profile_linux /root/.conan2/profiles/default
-          sudo bash -c 'echo -e "[conf]\ntools.system.package_manager:mode=install" >> /root/.conan2/profiles/default'
           sudo cat /root/.conan2/profiles/default
           sudo chmod 777 -R /root/.conan2
 
