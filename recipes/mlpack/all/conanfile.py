@@ -114,7 +114,8 @@ class MlpackConan(ConanFile):
             flags = ["-xopenmp"]
         elif is_msvc(self):
         # https://github.com/mlpack/mlpack/blob/4.3.0/CMakeLists.txt#L164-L175
-            flags = ["-openmp:llvm", "/bigobj", "/Zm200", "/Zc:__cplusplus"]
+            #flags = ["-openmp:llvm", "/bigobj", "/Zm200", "/Zc:__cplusplus"]
+            flags = ["/bigobj", "/Zm200", "/Zc:__cplusplus"]
         if flags:
             self.cpp_info.cflags = flags
             self.cpp_info.cxxflags = flags

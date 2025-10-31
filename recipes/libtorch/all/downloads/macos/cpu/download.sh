@@ -1,1 +1,1 @@
-wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-arm64-2.8.0.zip
+wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-arm64-2.9.0.zip

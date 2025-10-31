@@ -5,7 +5,7 @@ import zipfile
 
 class LibTorchConan(ConanFile):
     name = "libtorch"
-    version = "2.7.1"
+    version = "2.9.0"
     description = "Precompiled LibTorch binaries for multiple platforms"
     license = "BSD-3-Clause"
     url = "https://pytorch.org"
@@ -35,11 +35,11 @@ class LibTorchConan(ConanFile):
         variant = "cuda" if self.options.with_cuda else "cpu"
 
         archive_name = {
-            ("windows", "cpu"): "libtorch-win-shared-with-deps-2.7.1+cpu.zip",
-            ("windows", "cuda"): "libtorch-win-shared-with-deps-2.7.1+cu128.zip",
-            ("linux", "cpu"): "libtorch-cxx11-abi-shared-with-deps-2.7.1+cpu.zip",
-            ("linux", "cuda"): "libtorch-cxx11-abi-shared-with-deps-2.7.1+cu128.zip",
-            ("macos", "cpu"): "libtorch-macos-arm64-2.7.1.zip"
+            ("windows", "cpu"): "libtorch-win-shared-with-deps-2.9.0+cpu.zip",
+            ("windows", "cuda"): "libtorch-win-shared-with-deps-2.9.0+cu128.zip",
+            ("linux", "cpu"): "libtorch-cxx11-abi-shared-with-deps-2.9.0+cpu.zip",
+            ("linux", "cuda"): "libtorch-cxx11-abi-shared-with-deps-2.9.0+cu128.zip",
+            ("macos", "cpu"): "libtorch-macos-arm64-2.9.0.zip"
         }[(platform_key, variant)]
 
         archive_path = os.path.join(
