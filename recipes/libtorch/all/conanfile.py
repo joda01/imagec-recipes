@@ -37,8 +37,8 @@ class LibTorchConan(ConanFile):
         archive_name = {
             ("windows", "cpu"): "libtorch-win-shared-with-deps-2.9.0+cpu.zip",
             ("windows", "cuda"): "libtorch-win-shared-with-deps-2.9.0+cu128.zip",
-            ("linux", "cpu"): "libtorch-cxx11-abi-shared-with-deps-2.9.0+cpu.zip",
-            ("linux", "cuda"): "libtorch-cxx11-abi-shared-with-deps-2.9.0+cu128.zip",
+            ("linux", "cpu"): "libtorch-shared-with-deps-2.9.0+cpu.zip",
+            ("linux", "cuda"): "libtorch-shared-with-deps-2.9.0+cu128.zip",
             ("macos", "cpu"): "libtorch-macos-arm64-2.9.0.zip"
         }[(platform_key, variant)]
 
